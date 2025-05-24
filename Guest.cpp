@@ -27,6 +27,7 @@ void Guest::copyFrom(const Guest &other) {
 
 Guest::Guest(int _id, const char *_name, const char *_phone, const char *_email,
              guestStatus _status): id(_id), status(_status) {
+    nameValidation(_name);
     phoneValidation(_phone);
     emailValidation(_email);
     name = new char[strlen(_name) + 1];
@@ -54,6 +55,7 @@ Guest::~Guest() {
 }
 
 void Guest::setName(const char *_name) {
+    nameValidation(_name);
     delete[] name;
     name = new char[strlen(_name) + 1];
     strcpy(name, _name);
