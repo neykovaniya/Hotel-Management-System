@@ -31,5 +31,6 @@ public:
     [[nodiscard]] const char* getEmail() const;
     [[nodiscard]] guestStatus getStatus() const;
     void print() const;
-    void phoneValidation(const char* _phone) ;
+    void phoneValidation(const char* _phone) const;
+    void emailValidation(const char* email) const;
 };

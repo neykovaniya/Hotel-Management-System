@@ -28,6 +28,7 @@ void Guest::copyFrom(const Guest &other) {
 Guest::Guest(int _id, const char *_name, const char *_phone, const char *_email,
              guestStatus _status): id(_id), status(_status) {
     phoneValidation(_phone);
+    emailValidation(_email);
     name = new char[strlen(_name) + 1];
     strcpy(name, _name);
     phone = new char[strlen(_phone) + 1];
@@ -66,6 +67,7 @@ void Guest::setPhone(const char *_phone) {
 }
 
 void Guest::setEmail(const char *_email) {
+    emailValidation(_email);
     delete[] email;
     email = new char[strlen(_email) + 1];
     strcpy(email, _email);
@@ -117,7 +119,7 @@ void Guest::print() const {
     std::cout << std::endl;
 }
 
-void Guest::phoneValidation(const char *_phone) {
+void Guest::phoneValidation(const char *_phone) const{
     if (!_phone) {
         throw std::invalid_argument("Phone cannot be null :(");
     }
@@ -127,6 +129,28 @@ void Guest::phoneValidation(const char *_phone) {
     for (int i = 0; i < 10; ++i) {
         if (!(_phone[i] >= '0' && _phone[i] <= '9')) {
             throw std::invalid_argument("Phone must contain only digits :(");
+        }
+    }
+}
+
+void Guest::emailValidation(const char *email) const{
+    if (!email) {
+        throw std::invalid_argument("Email cannot be null :(");
+    }
+    const char* at = strchr(email, '@');
+    if (!at) {
+        throw std::invalid_argument("Email must contain '@' :(");
+    }
+    const char* dot = strchr(at, '.');
+    if (!dot) {
+        throw std::invalid_argument("Email must contain '.' after '@' :(");
+    }
+    if (email[0] == '@') {
+        throw std::invalid_argument("Email cannot start with '@' :(");
+    }
+    for (size_t i = 0; i < strlen(email); i++) {
+        if (email[i] == ' ') {
+            throw std::invalid_argument("Email cannot contain spaces :(");
         }
     }
 }
