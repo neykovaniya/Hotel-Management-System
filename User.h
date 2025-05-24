@@ -40,4 +40,8 @@ public:
     void setRole(Role _role);
 
     void print() const;
+
+    void usernameValidation(const char* _username) const;
+
+    void passwordValidation(const char* _password) const;
 };

@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <cstring>
+#include <stdexcept>
 #include "User.h"
 
 void User::copyFrom(const User &other) {
@@ -21,6 +22,8 @@ void User::free() {
 }
 
 User::User(const char *_username, const char *_password, Role _role) : role(_role) {
+    usernameValidation(_username);
+    passwordValidation(_password);
     username = new char[strlen(_username) + 1];
     strcpy(username, _username);
     password = new char[strlen(_password) + 1];
@@ -56,12 +59,14 @@ Role User::getRole() const {
 }
 
 void User::setUsername(const char *_username) {
+    usernameValidation(_username);
     delete[] username;
     username = new char[strlen(_username) + 1];
     strcpy(username, _username);
 }
 
 void User::setPassword(const char *_password) {
+    passwordValidation(_password);
     delete[] password;
     password = new char[strlen(_password) + 1];
     strcpy(password, _password);
@@ -88,3 +93,16 @@ void User::print() const {
     }
     std::cout << std::endl;
 }
+
+void User::usernameValidation(const char *_username) const {
+    if (!_username || strlen(_username) < 1) {
+        throw std::invalid_argument("Username must be at least 1 character :(");
+    }
+}
+
+void User::passwordValidation(const char *_password) const {
+    if (!_password || strlen(_password) < 1) {
+        throw std::invalid_argument("Password must be at least 1 character :(");
+    }
+}
+
