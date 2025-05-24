@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cstring>
 #include "Guest.h"
-const int MAX_PHONE_SIZE = 10;
 
 void Guest::free() {
     delete[] name;
@@ -28,6 +27,7 @@ void Guest::copyFrom(const Guest &other) {
 
 Guest::Guest(int _id, const char *_name, const char *_phone, const char *_email,
              guestStatus _status): id(_id), status(_status) {
+    phoneValidation(_phone);
     name = new char[strlen(_name) + 1];
     strcpy(name, _name);
     phone = new char[strlen(_phone) + 1];
@@ -59,6 +59,7 @@ void Guest::setName(const char *_name) {
 }
 
 void Guest::setPhone(const char *_phone) {
+    phoneValidation(_phone);
     delete[]phone;
     phone = new char[strlen(_phone) + 1];
     strcpy(phone, _phone);
@@ -114,4 +115,18 @@ void Guest::print() const {
             break;
     }
     std::cout << std::endl;
+}
+
+void Guest::phoneValidation(const char *_phone) {
+    if (!_phone) {
+        throw std::invalid_argument("Phone cannot be null :(");
+    }
+    if (strlen(_phone) != 10) {
+        throw std::invalid_argument("Phone must be exactly 10 digits :(");
+    }
+    for (int i = 0; i < 10; ++i) {
+        if (!(_phone[i] >= '0' && _phone[i] <= '9')) {
+            throw std::invalid_argument("Phone must contain only digits :(");
+        }
+    }
 }
