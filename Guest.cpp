@@ -119,7 +119,13 @@ void Guest::print() const {
     std::cout << std::endl;
 }
 
-void Guest::phoneValidation(const char *_phone) const{
+void Guest::nameValidation(const char *_name) const {
+    if (!_name || strlen(_name) < 1) {
+        throw std::invalid_argument("Username must be at least 1 character :(");
+    }
+}
+
+void Guest::phoneValidation(const char *_phone) const {
     if (!_phone) {
         throw std::invalid_argument("Phone cannot be null :(");
     }
@@ -133,15 +139,15 @@ void Guest::phoneValidation(const char *_phone) const{
     }
 }
 
-void Guest::emailValidation(const char *email) const{
+void Guest::emailValidation(const char *email) const {
     if (!email) {
         throw std::invalid_argument("Email cannot be null :(");
     }
-    const char* at = strchr(email, '@');
+    const char *at = strchr(email, '@');
     if (!at) {
         throw std::invalid_argument("Email must contain '@' :(");
     }
-    const char* dot = strchr(at, '.');
+    const char *dot = strchr(at, '.');
     if (!dot) {
         throw std::invalid_argument("Email must contain '.' after '@' :(");
     }
