@@ -13,6 +13,9 @@ void Room::setStatus(roomStatus _status) {
 }
 
 void Room::setPrice(double _price) {
+    if (_price < 0) {
+        throw std::invalid_argument("Price cannot be negative :(");
+    }
     price = _price;
 }
 
