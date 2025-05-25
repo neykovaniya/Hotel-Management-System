@@ -6,6 +6,7 @@
 
 const int MAX_ROOMS = 10;
 const int MAX_GUESTS = 10;
+const int MAX_RESERVATIONS = 10;
 
 int main() {
     Room *rooms[MAX_ROOMS];
@@ -19,22 +20,38 @@ int main() {
     guests[guestCount++] = new Guest(1, "Niya", "0888123456", "niya@gmail.com", GOLD);
     guests[guestCount++] = new Guest(2, "Dari", "0888777666", "dari@gmail.com", REGULAR);
 
+    Reservation *reservations[MAX_RESERVATIONS];
+    int reservationCount = 0;
+    reservations[reservationCount++] = new Reservation(1, guests[0], rooms[0], "01.06.2025", 2);
+    reservations[reservationCount++] = new Reservation(2, guests[1], rooms[2], "05.06.2025", 3);
+
     std::cout << "----------rooms----------" << std::endl;
     for (int i = 0; i < roomCount; i++) {
         rooms[i]->print();
         std::cout << "--------------------------" << std::endl;
-    }
-
-    for (int i = 0; i < roomCount; i++) {
-        delete rooms[i];
     }
     std::cout << "----------guests----------" << std::endl;
     for (int i = 0; i < guestCount; i++) {
         guests[i]->print();
         std::cout << "--------------------------" << std::endl;
     }
+    std::cout << "------- reservations -------" << std::endl;
+    for (int i = 0; i < reservationCount; i++) {
+        reservations[i]->print();
+        std::cout << "--------------------------" << std::endl;
+    }
+
+    for (int i = 0; i < roomCount; i++) {
+        delete rooms[i];
+    }
+
     for (int i = 0; i < guestCount; i++) {
         delete guests[i];
     }
+
+    for (int i = 0; i < reservationCount; i++) {
+        delete reservations[i];
+    }
+
     return 0;
 }
