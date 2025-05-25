@@ -7,6 +7,7 @@
 const int MAX_ROOMS = 10;
 const int MAX_GUESTS = 10;
 const int MAX_RESERVATIONS = 10;
+const int BUFFER_SIZE = 200;
 
 int main() {
     Room *rooms[MAX_ROOMS];
@@ -31,7 +32,8 @@ int main() {
         std::cout << "1. Show all rooms" << std::endl;
         std::cout << "2. Show all guests" << std::endl;
         std::cout << "3. Show all reservations" << std::endl;
-        std::cout << "4. Exit" << std::endl;
+        std::cout << "4. Register new guest" << std::endl;
+        std::cout << "5. Exit" << std::endl;
         std::cout << "Enter choice: ";
         std::cin >> choice;
 
@@ -57,13 +59,81 @@ int main() {
                     std::cout << "-------------------" << std::endl;
                 }
                 break;
-            case 4:
+            //fix validation
+            case 4: {
+                if (guestCount >= MAX_GUESTS) {
+                    std::cout << "No space for more guests :(" << std::endl;
+                    break;
+                }
+                char temp[BUFFER_SIZE];
+                char *name = nullptr;
+                char *phone = nullptr;
+                char *email = nullptr;
+                int statusInput;
+
+                std::cin.ignore(); //removing \n
+
+                while (true) {
+                    std::cout << "Enter name: ";
+                    std::cin.getline(temp, BUFFER_SIZE);
+                    try {
+                        Guest::nameValidation(temp);
+                        name = new char[strlen(temp) + 1];
+                        strcpy(name, temp);
+                        break;
+                    } catch (const std::invalid_argument &e) {
+                        std::cerr << "Invalid name: " << e.what() << std::endl << std::flush;
+                    }
+                }
+
+                while (true) {
+                    std::cout << "Enter phone (10 digits): ";
+                    std::cin.getline(temp, BUFFER_SIZE);
+                    try {
+                        Guest::phoneValidation(temp);
+                        phone = new char[strlen(temp) + 1];
+                        strcpy(phone, temp);
+                        break;
+                    } catch (const std::invalid_argument &e) {
+                        std::cerr << "Invalid phone: " << e.what() << std::endl;
+                    }
+                }
+
+
+                while (true) {
+                    std::cout << "Enter email: ";
+                    std::cin.getline(temp, BUFFER_SIZE);
+                    try {
+                        Guest::emailValidation(temp);
+                        email = new char[strlen(temp) + 1];
+                        strcpy(email, temp);
+                        break;
+                    } catch (const std::invalid_argument &e) {
+                        std::cerr << "Invalid email: " << e.what() << std::endl << std::flush;
+                    }
+                }
+
+                std::cout << "Enter status (0-REGULAR, 1-GOLD, 2-PLATINUM): ";
+                std::cin >> statusInput;
+
+                guests[guestCount++] = new Guest(guestCount + 1, name, phone, email,
+                                                 static_cast<guestStatus>(statusInput));
+                std::cout << "Guest registered successfully :)))" << std::endl;
+
+                delete[] name;
+                delete[] phone;
+                delete[] email;
+
+                break;
+            }
+
+            case 5:
                 std::cout << "Bye bye :)" << std::endl;
                 break;
             default:
                 std::cout << "Invalid choice. Try again :(" << std::endl;
         }
-    } while (choice != 4);
+    } while (choice != 5);
 
     for (int i = 0; i < roomCount; i++) {
         delete rooms[i];
