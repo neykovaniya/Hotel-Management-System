@@ -25,21 +25,45 @@ int main() {
     reservations[reservationCount++] = new Reservation(1, guests[0], rooms[0], "01.06.2025", 2);
     reservations[reservationCount++] = new Reservation(2, guests[1], rooms[2], "05.06.2025", 3);
 
-    std::cout << "----------rooms----------" << std::endl;
-    for (int i = 0; i < roomCount; i++) {
-        rooms[i]->print();
-        std::cout << "--------------------------" << std::endl;
-    }
-    std::cout << "----------guests----------" << std::endl;
-    for (int i = 0; i < guestCount; i++) {
-        guests[i]->print();
-        std::cout << "--------------------------" << std::endl;
-    }
-    std::cout << "------- reservations -------" << std::endl;
-    for (int i = 0; i < reservationCount; i++) {
-        reservations[i]->print();
-        std::cout << "--------------------------" << std::endl;
-    }
+    int choice;
+    do {
+        std::cout << "----------menu----------" << std::endl;
+        std::cout << "1. Show all rooms" << std::endl;
+        std::cout << "2. Show all guests" << std::endl;
+        std::cout << "3. Show all reservations" << std::endl;
+        std::cout << "4. Exit" << std::endl;
+        std::cout << "Enter choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+            case 1:
+                std::cout << "----------rooms----------" << std::endl;
+                for (int i = 0; i < roomCount; i++) {
+                    rooms[i]->print();
+                    std::cout << "-------------------" << std::endl;
+                }
+                break;
+            case 2:
+                std::cout << "----------guests----------" << std::endl;
+                for (int i = 0; i < guestCount; i++) {
+                    guests[i]->print();
+                    std::cout << "-------------------" << std::endl;
+                }
+                break;
+            case 3:
+                std::cout << "----------reservations----------" << std::endl;
+                for (int i = 0; i < reservationCount; i++) {
+                    reservations[i]->print();
+                    std::cout << "-------------------" << std::endl;
+                }
+                break;
+            case 4:
+                std::cout << "Bye bye :)" << std::endl;
+                break;
+            default:
+                std::cout << "Invalid choice. Try again :(" << std::endl;
+        }
+    } while (choice != 4);
 
     for (int i = 0; i < roomCount; i++) {
         delete rooms[i];
