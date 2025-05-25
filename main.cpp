@@ -82,7 +82,7 @@ int main() {
                         strcpy(name, temp);
                         break;
                     } catch (const std::invalid_argument &e) {
-                        std::cerr << "Invalid name: " << e.what() << std::endl << std::flush;
+                        std::cout << "Invalid name: " << e.what() << std::endl << std::flush;
                     }
                 }
 
@@ -95,10 +95,9 @@ int main() {
                         strcpy(phone, temp);
                         break;
                     } catch (const std::invalid_argument &e) {
-                        std::cerr << "Invalid phone: " << e.what() << std::endl;
+                        std::cout << "Invalid phone: " << e.what() << std::endl;
                     }
                 }
-
 
                 while (true) {
                     std::cout << "Enter email: ";
@@ -109,7 +108,7 @@ int main() {
                         strcpy(email, temp);
                         break;
                     } catch (const std::invalid_argument &e) {
-                        std::cerr << "Invalid email: " << e.what() << std::endl << std::flush;
+                        std::cout << "Invalid email: " << e.what() << std::endl << std::flush;
                     }
                 }
 

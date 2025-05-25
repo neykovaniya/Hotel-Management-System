@@ -1,6 +1,7 @@
 //
 // Created by Niya Neykova on 24.05.25.
 //
+
 #pragma once
 enum roomType {
     SINGLE,

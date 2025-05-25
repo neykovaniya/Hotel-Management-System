@@ -121,27 +121,27 @@ void Guest::print() const {
     std::cout << std::endl;
 }
 
-void Guest::nameValidation(const char *_name) const {
+void Guest::nameValidation(const char *_name) {
     if (!_name || strlen(_name) < 1) {
         throw std::invalid_argument("Username must be at least 1 character :(");
     }
 }
 
-void Guest::phoneValidation(const char *_phone) const {
+void Guest::phoneValidation(const char *_phone) {
     if (!_phone) {
         throw std::invalid_argument("Phone cannot be null :(");
     }
     if (strlen(_phone) != 10) {
         throw std::invalid_argument("Phone must be exactly 10 digits :(");
     }
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10; i++) {
         if (!(_phone[i] >= '0' && _phone[i] <= '9')) {
             throw std::invalid_argument("Phone must contain only digits :(");
         }
     }
 }
 
-void Guest::emailValidation(const char *email) const {
+void Guest::emailValidation(const char *email) {
     if (!email) {
         throw std::invalid_argument("Email cannot be null :(");
     }
