@@ -11,6 +11,19 @@ const int MAX_RESERVATIONS = 10;
 const int MAX_USERS = 10;
 const int BUFFER_SIZE = 200;
 
+bool safeInputInt(const char *message, int &value) {
+    std::cout << message;
+    std::cin >> value;
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(BUFFER_SIZE, '\n');
+        std::cout << "Invalid input! Please enter a number." << std::endl;
+        return false;
+    }
+    std::cin.ignore();
+    return true;
+}
+
 void showAllRooms(Room *rooms[], int roomCount) {
     std::cout << "----------rooms----------" << std::endl;
     for (int i = 0; i < roomCount; i++) {
@@ -96,8 +109,7 @@ void registerNewGuest(Guest *guests[], int &guestCount) {
         }
     }
 
-    std::cout << "Enter status (0-REGULAR, 1-GOLD, 2-PLATINUM): ";
-    std::cin >> statusInput;
+    if (!safeInputInt("Enter status (0-REGULAR, 1-GOLD, 2-PLATINUM): ", statusInput)) return;
 
     guests[guestCount++] = new Guest(guestCount + 1, name, phone, email,
                                      static_cast<guestStatus>(statusInput));
@@ -122,8 +134,7 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
     }
 
     int guestID;
-    std::cout << "Enter guest ID: ";
-    std::cin >> guestID;
+    if (!safeInputInt("Enter guest ID: ", guestID)) return;
     Guest *selectedGuest = nullptr;
     for (int i = 0; i < guestCount; i++) {
         if (guests[i]->getID() == guestID) {
@@ -144,8 +155,7 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
     }
 
     int roomNum;
-    std::cout << "Enter room number: ";
-    std::cin >> roomNum;
+    if (!safeInputInt("Enter room number: ", roomNum)) return;
     Room *selectedRoom = nullptr;
     for (int i = 0; i < roomCount; i++) {
         if (rooms[i]->getRoomNum() == roomNum && rooms[i]->getStatus() == AVAILABLE) {
@@ -173,8 +183,8 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
     }
 
     int nights;
-    std::cout << "Enter number of nights: ";
-    std::cin >> nights;
+    if (!safeInputInt("Enter number of nights: ", nights)) return;
+
     if (nights <= 0) {
         std::cout << "Number of nights must be positive :(" << std::endl;
         return;
@@ -316,7 +326,7 @@ int main() {
         if (std::cin.fail()) {
             std::cin.clear();
             std::cin.ignore(BUFFER_SIZE, '\n');
-            std::cout << "Invalid input! Please enter a number."<<std::endl;
+            std::cout << "Invalid input! Please enter a number." << std::endl;
             continue;
         }
 
