@@ -12,6 +12,39 @@ const int MAX_RESERVATIONS = 10;
 const int MAX_USERS = 10;
 const int BUFFER_SIZE = 200;
 
+void addRoom(Room *rooms[], int &roomCount) {
+    if (roomCount >= MAX_ROOMS) {
+        std::cout << "No space for more rooms :(" << std::endl;
+        return;
+    }
+
+    std::cout << "Select room type:\n";
+    std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT\n";
+    int typeInput;
+    std::cin >> typeInput;
+
+    if (std::cin.fail() || typeInput < 0 || typeInput > 4) {
+        std::cin.clear();
+        std::cin.ignore(200, '\n');
+        std::cout << "Invalid room type!\n";
+        return;
+    }
+
+    double price;
+    std::cout << "Enter price per night: ";
+    std::cin >> price;
+
+    if (std::cin.fail() || price < 0) {
+        std::cin.clear();
+        std::cin.ignore(200, '\n');
+        std::cout << "Invalid price!\n";
+        return;
+    }
+
+    rooms[roomCount++] = new Room(static_cast<roomType>(typeInput), AVAILABLE, price);
+    std::cout << "Room added successfully :)\n";
+}
+
 void editReservation(Reservation *reservations[], int reservationCount) {
     int id;
     std::cout << "Enter reservation ID to edit: ";
@@ -359,9 +392,10 @@ void printMenu(Role role) {
             std::cout << "6. Show only available rooms" << std::endl;
             std::cout << "7. Search guest by name" << std::endl;
             std::cout << "8. Search reservations by date" << std::endl;
-            std::cout << "9. Edit reservation" << std::endl;
-            std::cout << "10. Delete reservation" << std::endl;
-            std::cout << "11. Exit" << std::endl;
+            std::cout << "9. Add new room" << std::endl;
+            std::cout << "10. Edit reservation" << std::endl;
+            std::cout << "11. Delete reservation" << std::endl;
+            std::cout << "12. Exit" << std::endl;
             break;
         case RECEPTIONIST:
             std::cout << "1. Show all rooms" << std::endl;
@@ -455,12 +489,13 @@ int main() {
                         break;
                     case 8: searchReservationByDate(reservations, reservationCount);
                         break;
-                    case 9: editReservation(reservations, reservationCount);
+                    case 9: addRoom(rooms, roomCount);
                         break;
-
-                    case 10: deleteReservation(reservations, reservationCount);
+                    case 10: editReservation(reservations, reservationCount);
                         break;
-                    case 11: std::cout << "Bye bye :)";
+                    case 11: deleteReservation(reservations, reservationCount);
+                        break;
+                    case 12: std::cout << "Bye bye :)";
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -505,7 +540,7 @@ int main() {
                 }
                 break;
         }
-    } while (!((currentUser->getRole() == MANAGER && choice == 11) ||
+    } while (!((currentUser->getRole() == MANAGER && choice == 12) ||
                (currentUser->getRole() == RECEPTIONIST && choice == 10) ||
                (currentUser->getRole() == ACCOUNTANT && choice == 3)));
 
