@@ -34,7 +34,8 @@ int main() {
         std::cout << "3. Show all reservations" << std::endl;
         std::cout << "4. Register new guest" << std::endl;
         std::cout << "5. Create new reservation" << std::endl;
-        std::cout << "6. Exit" << std::endl;
+        std::cout << "6. Show only available rooms" << std::endl;
+        std::cout << "7. Exit" << std::endl;
         std::cout << "Enter choice: ";
         std::cin >> choice;
 
@@ -204,12 +205,21 @@ int main() {
                 break;
             }
             case 6:
+                std::cout << "----------available rooms----------" << std::endl;
+                for (int i = 0; i < roomCount; i++) {
+                    if (rooms[i]->getStatus() == AVAILABLE) {
+                        rooms[i]->print();
+                        std::cout << "-------------------" << std::endl;
+                    }
+                }
+                break;
+            case 7:
                 std::cout << "Bye bye :)" << std::endl;
                 break;
             default:
                 std::cout << "Invalid choice. Try again :(" << std::endl;
         }
-    } while (choice != 6);
+    } while (choice != 7);
 
     for (int i = 0; i < roomCount; i++) {
         delete rooms[i];
