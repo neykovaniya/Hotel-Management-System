@@ -1,8 +1,6 @@
-//
-// Created by Niya Neykova on 24.05.25.
-//
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "Guest.h"
 
 void Guest::free() {
@@ -161,4 +159,42 @@ void Guest::emailValidation(const char *email) {
             throw std::invalid_argument("Email cannot contain spaces :(");
         }
     }
+}
+void Guest::saveToFile(std::ofstream& out) const {
+    out << id << '\n'
+        << name << '\n'
+        << phone << '\n'
+        << email << '\n'
+        << status << '\n';
+}
+Guest* Guest::loadFromFile(std::ifstream& in) {
+    int id;
+    char buffer[200];
+    guestStatus status;
+
+    if (!(in >> id)) return nullptr;
+    in.ignore();
+
+    in.getline(buffer, 200);
+    char* name = new char[strlen(buffer) + 1];
+    strcpy(name, buffer);
+
+    in.getline(buffer, 200);
+    char* phone = new char[strlen(buffer) + 1];
+    strcpy(phone, buffer);
+
+    in.getline(buffer, 200);
+    char* email = new char[strlen(buffer) + 1];
+    strcpy(email, buffer);
+
+    int statusInt;
+    in >> statusInt;
+    status = static_cast<guestStatus>(statusInt);
+    in.ignore();
+
+    Guest* g = new Guest(id, name, phone, email, status);
+    delete[] name;
+    delete[] phone;
+    delete[] email;
+    return g;
 }

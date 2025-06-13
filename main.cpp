@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "Guest.h"
 #include "Room.h"
 #include "User.h"
@@ -301,8 +302,13 @@ int main() {
 
     Guest *guests[MAX_GUESTS];
     int guestCount = 0;
-    guests[guestCount++] = new Guest(1, "Niya", "0888123456", "niya@gmail.com", GOLD);
-    guests[guestCount++] = new Guest(2, "Dari", "0888777666", "dari@gmail.com", REGULAR);
+    std::ifstream guestIn("guests.txt");
+    while (guestIn) {
+        Guest* g = Guest::loadFromFile(guestIn);
+        if (g) guests[guestCount++] = g;
+    }
+    guestIn.close();
+
 
     Reservation *reservations[MAX_RESERVATIONS];
     int reservationCount = 0;
@@ -394,6 +400,12 @@ int main() {
     } while (!((currentUser->getRole() == MANAGER && choice == 9) ||
                (currentUser->getRole() == RECEPTIONIST && choice == 8) ||
                (currentUser->getRole() == ACCOUNTANT && choice == 3)));
+
+    std::ofstream guestOut("guests.txt");
+    for (int i = 0; i < guestCount; i++) {
+        guests[i]->saveToFile(guestOut);
+    }
+    guestOut.close();
 
     for (int i = 0; i < roomCount; i++) delete rooms[i];
     for (int i = 0; i < guestCount; i++) delete guests[i];

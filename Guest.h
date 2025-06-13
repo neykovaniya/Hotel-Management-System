@@ -34,4 +34,6 @@ public:
     static void nameValidation(const char* _name) ;
     static void phoneValidation(const char* _phone) ;
     static void emailValidation(const char* email) ;
+    void saveToFile(std::ofstream& out) const;
+    static Guest* loadFromFile(std::ifstream& in);
 };
