@@ -23,6 +23,7 @@ private:
     double price;
     static int nextRoomNum;
 public:
+    Room(int _roomNum, roomType _type, roomStatus _status, double _price);
     Room(roomType _type, roomStatus _status, double _price);
     void setStatus(roomStatus _status);
     void setPrice(double _price);
@@ -31,4 +32,6 @@ public:
     [[nodiscard]] roomStatus getStatus() const;
     [[nodiscard]] double getPricePerNight() const;
     void print() const;
+    void saveToFile(std::ofstream& out) const;
+    static Room* loadFromFile(std::ifstream& in);
 };

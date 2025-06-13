@@ -1,13 +1,16 @@
-//
-// Created by Niya Neykova on 24.05.25.
-//
+#include <fstream>
 #include <iostream>
 #include "Room.h"
 int Room::nextRoomNum = 1;
 Room::Room(roomType _type, roomStatus _status, double _price)
-    : roomNum(nextRoomNum++), type(_type), status(_status), price(_price) {
-}
+    : roomNum(nextRoomNum++), type(_type), status(_status), price(_price) {}
 
+Room::Room(int _roomNum, roomType _type, roomStatus _status, double _price)
+    : roomNum(_roomNum), type(_type), status(_status), price(_price) {
+    if (_roomNum >= nextRoomNum) {
+        nextRoomNum = _roomNum + 1;
+    }
+}
 void Room::setStatus(roomStatus _status) {
     status = _status;
 }
@@ -68,4 +71,20 @@ void Room::print() const {
             break;
     }
     std::cout << std::endl << "Price: " << price << std::endl;
+}
+void Room::saveToFile(std::ofstream& out) const {
+    out << roomNum << '\n'
+        << type << '\n'
+        << status << '\n'
+        << price << '\n';
+}
+
+Room* Room::loadFromFile(std::ifstream& in) {
+    int number, typeInt, statusInt;
+    double price;
+
+    if (!(in >> number)) return nullptr;
+    in >> typeInt >> statusInt >> price;
+    in.ignore();
+    return new Room(number, static_cast<roomType>(typeInt), static_cast<roomStatus>(statusInt), price);
 }

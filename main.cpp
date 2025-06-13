@@ -296,9 +296,13 @@ void printMenu(Role role) {
 int main() {
     Room *rooms[MAX_ROOMS];
     int roomCount = 0;
-    rooms[roomCount++] = new Room(SINGLE, AVAILABLE, 80.0);
-    rooms[roomCount++] = new Room(DELUXE, RESERVED, 150.0);
-    rooms[roomCount++] = new Room(APARTMENT, AVAILABLE, 200.0);
+    std::ifstream roomIn("rooms.txt");
+    while (roomIn) {
+        Room* r = Room::loadFromFile(roomIn);
+        if (r) rooms[roomCount++] = r;
+    }
+    roomIn.close();
+
 
     Guest *guests[MAX_GUESTS];
     int guestCount = 0;
@@ -406,7 +410,11 @@ int main() {
         guests[i]->saveToFile(guestOut);
     }
     guestOut.close();
-
+    std::ofstream roomOut("rooms.txt");
+    for (int i = 0; i < roomCount; i++) {
+        rooms[i]->saveToFile(roomOut);
+    }
+    roomOut.close();
     for (int i = 0; i < roomCount; i++) delete rooms[i];
     for (int i = 0; i < guestCount; i++) delete guests[i];
     for (int i = 0; i < reservationCount; i++) delete reservations[i];
