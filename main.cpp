@@ -36,7 +36,8 @@ int main() {
         std::cout << "5. Create new reservation" << std::endl;
         std::cout << "6. Show only available rooms" << std::endl;
         std::cout << "7. Search guest by name" << std::endl;
-        std::cout << "8. Exit" << std::endl;
+        std::cout << "8. Search reservations by date" << std::endl;
+        std::cout << "9. Exit" << std::endl;
         std::cout << "Enter choice: ";
         std::cin >> choice;
 
@@ -234,13 +235,42 @@ int main() {
                 }
                 break;
             }
-            case 8:
+            case 8: {
+                std::cin.ignore();
+                char queryDate[BUFFER_SIZE];
+                std::cout << "Enter date to search (DD.MM.YYYY): ";
+                std::cin.getline(queryDate, BUFFER_SIZE);
+
+                try {
+                    Reservation::dateValidation(queryDate);
+                } catch (const std::invalid_argument& e) {
+                    std::cout << "Invalid date: " << e.what() << std::endl;
+                    break;
+                }
+
+                bool found = false;
+                for (int i = 0; i < reservationCount; i++) {
+                    if (strcmp(reservations[i]->getCheckInDate(), queryDate) == 0) {
+                        reservations[i]->print();
+                        std::cout << "-------------------" << std::endl;
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    std::cout << "No reservations found for this date :(" << std::endl;
+                }
+
+                break;
+            }
+
+            case 9:
                 std::cout << "Bye bye :)" << std::endl;
                 break;
             default:
                 std::cout << "Invalid choice. Try again :(" << std::endl;
         }
-    } while (choice != 8);
+    } while (choice != 9);
 
     for (int i = 0; i < roomCount; i++) {
         delete rooms[i];
