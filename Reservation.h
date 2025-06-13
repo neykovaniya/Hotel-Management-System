@@ -29,5 +29,5 @@ public:
     [[nodiscard]] int getNights() const;
     [[nodiscard]] double getTotalPrice() const;
     void print() const;
-    void dateValidation(const char* _date) const;
+    static void dateValidation(const char* _date);
 };

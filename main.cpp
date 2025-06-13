@@ -33,7 +33,8 @@ int main() {
         std::cout << "2. Show all guests" << std::endl;
         std::cout << "3. Show all reservations" << std::endl;
         std::cout << "4. Register new guest" << std::endl;
-        std::cout << "5. Exit" << std::endl;
+        std::cout << "5. Create new reservation" << std::endl;
+        std::cout << "6. Exit" << std::endl;
         std::cout << "Enter choice: ";
         std::cin >> choice;
 
@@ -125,14 +126,90 @@ int main() {
 
                 break;
             }
+            case 5: {
+                if (reservationCount >= MAX_RESERVATIONS) {
+                    std::cout << "No space for more reservations :(" << std::endl;
+                    break;
+                }
 
-            case 5:
+                std::cout << "Guests: " << std::endl;
+                for (int i = 0; i < guestCount; i++) {
+                    std::cout << "ID: " << guests[i]->getID() << " - " << guests[i]->getName() << std::endl;
+                }
+
+                int guestID;
+                std::cout << "Enter guest ID: ";
+                std::cin >> guestID;
+                Guest *selectedGuest = nullptr;
+                for (int i = 0; i < guestCount; i++) {
+                    if (guests[i]->getID() == guestID) {
+                        selectedGuest = guests[i];
+                        break;
+                    }
+                }
+                if (!selectedGuest) {
+                    std::cout << "Invalid guest ID :(" << std::endl;
+                    break;
+                }
+
+                std::cout << "Available rooms: " << std::endl;
+                for (int i = 0; i < roomCount; i++) {
+                    if (rooms[i]->getStatus() == AVAILABLE) {
+                        std::cout << "Room number: " << rooms[i]->getRoomNum() << std::endl;
+                    }
+                }
+
+                int roomNum;
+                std::cout << "Enter room number: ";
+                std::cin >> roomNum;
+                Room *selectedRoom = nullptr;
+                for (int i = 0; i < roomCount; i++) {
+                    if (rooms[i]->getRoomNum() == roomNum && rooms[i]->getStatus() == AVAILABLE) {
+                        selectedRoom = rooms[i];
+                        break;
+                    }
+                }
+                if (!selectedRoom) {
+                    std::cout << "Invalid room number or room is not available :(" << std::endl;
+                    break;
+                }
+
+                std::cin.ignore();
+
+                char date[BUFFER_SIZE];
+                while (true) {
+                    std::cout << "Enter check-in date (DD.MM.YYYY): ";
+                    std::cin.getline(date, BUFFER_SIZE);
+                    try {
+                        Reservation::dateValidation(date);
+                        break;
+                    } catch (const std::invalid_argument &e) {
+                        std::cout << "Invalid date: " << e.what() << std::endl;
+                    }
+                }
+
+                int nights;
+                std::cout << "Enter number of nights: ";
+                std::cin >> nights;
+                if (nights <= 0) {
+                    std::cout << "Number of nights must be positive :(" << std::endl;
+                    break;
+                }
+
+                reservations[reservationCount++] = new Reservation(
+                    reservationCount + 1, selectedGuest, selectedRoom, date, nights);
+                selectedRoom->setStatus(RESERVED);
+
+                std::cout << "Reservation created successfully :)" << std::endl;
+                break;
+            }
+            case 6:
                 std::cout << "Bye bye :)" << std::endl;
                 break;
             default:
                 std::cout << "Invalid choice. Try again :(" << std::endl;
         }
-    } while (choice != 5);
+    } while (choice != 6);
 
     for (int i = 0; i < roomCount; i++) {
         delete rooms[i];

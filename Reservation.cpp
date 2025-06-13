@@ -104,7 +104,7 @@ void Reservation::print() const {
     std::cout << "Total Price: " << totalPrice << std::endl;
 }
 
-void Reservation::dateValidation(const char *_date) const {
+void Reservation::dateValidation(const char* _date) {
     if (!_date) {
         throw std::invalid_argument("Date cannot be null :(");
     }
