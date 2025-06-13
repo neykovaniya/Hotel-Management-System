@@ -21,8 +21,9 @@ private:
     roomType type;
     roomStatus status;
     double price;
+    static int nextRoomNum;
 public:
-    Room(int _roomNum,roomType _type, roomStatus _status, double _price);
+    Room(roomType _type, roomStatus _status, double _price);
     void setStatus(roomStatus _status);
     void setPrice(double _price);
     [[nodiscard]] int getRoomNum() const;

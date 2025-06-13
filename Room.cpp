@@ -3,9 +3,9 @@
 //
 #include <iostream>
 #include "Room.h"
-
-Room::Room(int _roomNum, roomType _type, roomStatus _status, double _price) : roomNum(_roomNum), type(_type),
-                                                                              status(_status), price(_price) {
+int Room::nextRoomNum = 1;
+Room::Room(roomType _type, roomStatus _status, double _price)
+    : roomNum(nextRoomNum++), type(_type), status(_status), price(_price) {
 }
 
 void Room::setStatus(roomStatus _status) {
