@@ -12,6 +12,56 @@ const int MAX_RESERVATIONS = 10;
 const int MAX_USERS = 10;
 const int BUFFER_SIZE = 200;
 
+void editReservation(Reservation *reservations[], int reservationCount) {
+    int id;
+    std::cout << "Enter reservation ID to edit: ";
+    std::cin >> id;
+
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(200, '\n');
+        std::cout << "Invalid input!\n";
+        return;
+    }
+
+    Reservation *r = nullptr;
+    for (int i = 0; i < reservationCount; i++) {
+        if (reservations[i]->getID() == id) {
+            r = reservations[i];
+            break;
+        }
+    }
+
+    if (!r) {
+        std::cout << "Reservation not found.\n";
+        return;
+    }
+
+    char newDate[200];
+    std::cin.ignore();
+    std::cout << "Enter new check-in date (DD.MM.YYYY): ";
+    std::cin.getline(newDate, 200);
+
+    try {
+        Reservation::dateValidation(newDate);
+        r->setDate(newDate);
+    } catch (const std::invalid_argument &e) {
+        std::cout << "Invalid date: " << e.what() << std::endl;
+    }
+
+    int nights;
+    std::cout << "Enter new number of nights: ";
+    std::cin >> nights;
+
+    if (!std::cin.fail() && nights > 0) {
+        r->setNights(nights);
+    } else {
+        std::cout << "Invalid nights input.\n";
+    }
+
+    std::cout << "Reservation updated successfully.\n";
+}
+
 void deleteReservation(Reservation *reservations[], int &reservationCount) {
     int id;
     std::cout << "Enter reservation ID to delete: ";
@@ -309,8 +359,9 @@ void printMenu(Role role) {
             std::cout << "6. Show only available rooms" << std::endl;
             std::cout << "7. Search guest by name" << std::endl;
             std::cout << "8. Search reservations by date" << std::endl;
-            std::cout << "9. Delete reservation" << std::endl;
-            std::cout << "10. Exit" << std::endl;
+            std::cout << "9. Edit reservation" << std::endl;
+            std::cout << "10. Delete reservation" << std::endl;
+            std::cout << "11. Exit" << std::endl;
             break;
         case RECEPTIONIST:
             std::cout << "1. Show all rooms" << std::endl;
@@ -320,8 +371,9 @@ void printMenu(Role role) {
             std::cout << "5. Create new reservation" << std::endl;
             std::cout << "6. Show only available rooms" << std::endl;
             std::cout << "7. Search guest by name" << std::endl;
-            std::cout << "8. Delete reservation" << std::endl;
-            std::cout << "9. Exit" << std::endl;
+            std::cout << "8. Edit reservation" << std::endl;
+            std::cout << "9. Delete reservation" << std::endl;
+            std::cout << "10. Exit" << std::endl;
             break;
         case ACCOUNTANT:
             std::cout << "1. Show all reservations" << std::endl;
@@ -403,9 +455,12 @@ int main() {
                         break;
                     case 8: searchReservationByDate(reservations, reservationCount);
                         break;
-                    case 9: deleteReservation(reservations, reservationCount);
+                    case 9: editReservation(reservations, reservationCount);
                         break;
-                    case 10: std::cout << "Bye bye :)";
+
+                    case 10: deleteReservation(reservations, reservationCount);
+                        break;
+                    case 11: std::cout << "Bye bye :)";
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -427,9 +482,11 @@ int main() {
                         break;
                     case 7: searchGuestByName(guests, guestCount);
                         break;
-                    case 8: deleteReservation(reservations, reservationCount);
+                    case 8: editReservation(reservations, reservationCount);
                         break;
-                    case 9: std::cout << "Bye bye :)";
+                    case 9: deleteReservation(reservations, reservationCount);
+                        break;
+                    case 10: std::cout << "Bye bye :)";
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -448,8 +505,8 @@ int main() {
                 }
                 break;
         }
-    } while (!((currentUser->getRole() == MANAGER && choice == 10) ||
-               (currentUser->getRole() == RECEPTIONIST && choice == 9) ||
+    } while (!((currentUser->getRole() == MANAGER && choice == 11) ||
+               (currentUser->getRole() == RECEPTIONIST && choice == 10) ||
                (currentUser->getRole() == ACCOUNTANT && choice == 3)));
 
     std::ofstream guestOut("guests.txt");
