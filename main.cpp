@@ -295,9 +295,9 @@ void printMenu(Role role) {
 int main() {
     Room *rooms[MAX_ROOMS];
     int roomCount = 0;
-    rooms[roomCount++] = new Room(roomCount + 1, SINGLE, AVAILABLE, 80.0);
-    rooms[roomCount++] = new Room(roomCount + 1, DELUXE, RESERVED, 150.0);
-    rooms[roomCount++] = new Room(roomCount + 1, APARTMENT, AVAILABLE, 200.0);
+    rooms[roomCount++] = new Room(SINGLE, AVAILABLE, 80.0);
+    rooms[roomCount++] = new Room(DELUXE, RESERVED, 150.0);
+    rooms[roomCount++] = new Room(APARTMENT, AVAILABLE, 200.0);
 
     Guest *guests[MAX_GUESTS];
     int guestCount = 0;
