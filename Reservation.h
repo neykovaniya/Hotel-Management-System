@@ -30,4 +30,7 @@ public:
     [[nodiscard]] double getTotalPrice() const;
     void print() const;
     static void dateValidation(const char* _date);
+    void saveToFile(std::ofstream& out) const;
+    static Reservation* loadFromFile(std::ifstream& in, Guest* guests[], int guestCount, Room* rooms[], int roomCount);
+
 };

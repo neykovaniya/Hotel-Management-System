@@ -1,6 +1,4 @@
-//
-// Created by Niya Neykova on 24.05.25.
-//
+#include <fstream>
 #include <iostream>
 #include <cstring>
 #include "Reservation.h"
@@ -128,4 +126,44 @@ void Reservation::dateValidation(const char* _date) {
     if (month < 1 || month > 12) {
         throw std::invalid_argument("Month must be between 01 and 12 :(");
     }
+}
+void Reservation::saveToFile(std::ofstream& out) const {
+    out << id << '\n'
+        << guest->getID() << '\n'
+        << room->getRoomNum() << '\n'
+        << checkInDate << '\n'
+        << nights << '\n';
+}
+
+Reservation* Reservation::loadFromFile(std::ifstream& in, Guest* guests[], int guestCount, Room* rooms[], int roomCount) {
+    int id, guestID, roomNum, nights;
+    char date[200];
+
+    if (!(in >> id)) return nullptr;
+    in >> guestID >> roomNum;
+    in.ignore();
+    in.getline(date, 200);
+    in >> nights;
+    in.ignore();
+
+    Guest* g = nullptr;
+    Room* r = nullptr;
+
+    for (int i = 0; i < guestCount; i++) {
+        if (guests[i]->getID() == guestID) {
+            g = guests[i];
+            break;
+        }
+    }
+
+    for (int i = 0; i < roomCount; i++) {
+        if (rooms[i]->getRoomNum() == roomNum) {
+            r = rooms[i];
+            break;
+        }
+    }
+
+    if (!g || !r) return nullptr;
+
+    return new Reservation(id, g, r, date, nights);
 }

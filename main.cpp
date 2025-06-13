@@ -316,8 +316,13 @@ int main() {
 
     Reservation *reservations[MAX_RESERVATIONS];
     int reservationCount = 0;
-    reservations[reservationCount++] = new Reservation(1, guests[0], rooms[0], "01.06.2025", 2);
-    reservations[reservationCount++] = new Reservation(2, guests[1], rooms[2], "05.06.2025", 3);
+    std::ifstream resIn("reservations.txt");
+    while (resIn) {
+        Reservation* res = Reservation::loadFromFile(resIn, guests, guestCount, rooms, roomCount);
+        if (res) reservations[reservationCount++] = res;
+    }
+    resIn.close();
+
 
     User *users[MAX_USERS];
     int userCount = 0;
@@ -415,6 +420,11 @@ int main() {
         rooms[i]->saveToFile(roomOut);
     }
     roomOut.close();
+    std::ofstream resOut("reservations.txt");
+    for (int i = 0; i < reservationCount; i++) {
+        reservations[i]->saveToFile(resOut);
+    }
+    resOut.close();
     for (int i = 0; i < roomCount; i++) delete rooms[i];
     for (int i = 0; i < guestCount; i++) delete guests[i];
     for (int i = 0; i < reservationCount; i++) delete reservations[i];
