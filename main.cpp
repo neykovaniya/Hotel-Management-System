@@ -35,7 +35,8 @@ int main() {
         std::cout << "4. Register new guest" << std::endl;
         std::cout << "5. Create new reservation" << std::endl;
         std::cout << "6. Show only available rooms" << std::endl;
-        std::cout << "7. Exit" << std::endl;
+        std::cout << "7. Search guest by name" << std::endl;
+        std::cout << "8. Exit" << std::endl;
         std::cout << "Enter choice: ";
         std::cin >> choice;
 
@@ -213,13 +214,33 @@ int main() {
                     }
                 }
                 break;
-            case 7:
+            case 7: {
+                std::cin.ignore();
+                char query[BUFFER_SIZE];
+                std::cout << "Enter name to search: ";
+                std::cin.getline(query, BUFFER_SIZE);
+
+                bool found = false;
+                for (int i = 0; i < guestCount; i++) {
+                    const char *guestName = guests[i]->getName();
+                    if (strstr(guestName, query)) {
+                        guests[i]->print();
+                        std::cout << "-------------------" << std::endl;
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    std::cout << "No guests found with that name :(" << std::endl;
+                }
+                break;
+            }
+            case 8:
                 std::cout << "Bye bye :)" << std::endl;
                 break;
             default:
                 std::cout << "Invalid choice. Try again :(" << std::endl;
         }
-    } while (choice != 7);
+    } while (choice != 8);
 
     for (int i = 0; i < roomCount; i++) {
         delete rooms[i];
