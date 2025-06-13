@@ -313,6 +313,13 @@ int main() {
         printMenu(currentUser->getRole());
         std::cout << "Enter choice: ";
         std::cin >> choice;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(BUFFER_SIZE, '\n');
+            std::cout << "Invalid input! Please enter a number."<<std::endl;
+            continue;
+        }
+
 
         switch (currentUser->getRole()) {
             case MANAGER:
