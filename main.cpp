@@ -229,10 +229,8 @@ void registerNewGuest(Guest *guests[], int &guestCount) {
         }
     }
 
-    if (!safeInputInt("Enter status (0-REGULAR, 1-GOLD, 2-PLATINUM): ", statusInput)) return;
+    guests[guestCount++] = new Guest(guestCount + 1, name, phone, email, REGULAR);
 
-    guests[guestCount++] = new Guest(guestCount + 1, name, phone, email,
-                                     static_cast<guestStatus>(statusInput));
 
     std::cout << "Guest registered successfully :)))" << std::endl;
     delete[] name;
