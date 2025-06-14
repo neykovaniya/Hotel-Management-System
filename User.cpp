@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstring>
 #include <stdexcept>
+#include <fstream>
 #include "User.h"
 
 void User::copyFrom(const User &other) {
@@ -106,3 +107,20 @@ void User::passwordValidation(const char *_password) const {
     }
 }
 
+void User::saveToFile(std::ofstream& out) const {
+    out << username << '\n'
+        << password << '\n'
+        << static_cast<int>(role) << '\n';
+}
+
+User* User::loadFromFile(std::ifstream& in) {
+    char uname[100], pass[100];
+    int roleInt;
+
+    if (!in.getline(uname, 100)) return nullptr;
+    if (!in.getline(pass, 100)) return nullptr;
+    if (!(in >> roleInt)) return nullptr;
+    in.ignore();
+
+    return new User(uname, pass, static_cast<Role>(roleInt));
+}

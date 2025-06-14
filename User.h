@@ -33,7 +33,7 @@ public:
 
     [[nodiscard]] Role getRole() const;
 
-    void setUsername(const char* _username);
+    void setUsername(const char *_username);
 
     void setPassword(const char *_password);
 
@@ -41,7 +41,11 @@ public:
 
     void print() const;
 
-    void usernameValidation(const char* _username) const;
+    void usernameValidation(const char *_username) const;
 
-    void passwordValidation(const char* _password) const;
+    void passwordValidation(const char *_password) const;
+
+    void saveToFile(std::ofstream &out) const;
+
+    static User *loadFromFile(std::ifstream &in);
 };

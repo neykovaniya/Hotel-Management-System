@@ -465,12 +465,14 @@ int main() {
     }
     resIn.close();
 
-
     User *users[MAX_USERS];
     int userCount = 0;
-    users[userCount++] = new User("admin", "admin123", MANAGER);
-    users[userCount++] = new User("reception", "recept123", RECEPTIONIST);
-    users[userCount++] = new User("account", "money$123", ACCOUNTANT);
+    std::ifstream userIn("users.txt");
+    while (userIn) {
+        User* u = User::loadFromFile(userIn);
+        if (u) users[userCount++] = u;
+    }
+    userIn.close();
 
     User *currentUser = login(users, userCount);
     if (!currentUser) return 1;
@@ -579,6 +581,13 @@ int main() {
         reservations[i]->saveToFile(resOut);
     }
     resOut.close();
+
+    std::ofstream userOut("users.txt");
+    for (int i = 0; i < userCount; i++) {
+        users[i]->saveToFile(userOut);
+    }
+    userOut.close();
+
     for (int i = 0; i < roomCount; i++) delete rooms[i];
     for (int i = 0; i < guestCount; i++) delete guests[i];
     for (int i = 0; i < reservationCount; i++) delete reservations[i];
