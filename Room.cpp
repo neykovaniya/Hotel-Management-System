@@ -88,3 +88,22 @@ Room* Room::loadFromFile(std::ifstream& in) {
     in.ignore();
     return new Room(number, static_cast<roomType>(typeInt), static_cast<roomStatus>(statusInt), price);
 }
+
+double Room::getDynamicPrice(const char* dateStr, double occupancyRate) const {
+    double finalPrice = price;
+
+    int month = (dateStr[3] - '0') * 10 + (dateStr[4] - '0');
+    if (month >= 6 && month <= 8) {
+        finalPrice *= 1.2;
+    }
+
+    if (occupancyRate > 0.7) {
+        finalPrice *= 1.15;
+    }
+
+    return finalPrice;
+}
+
+int Room::getNextRoomNum() {
+    return nextRoomNum;
+}

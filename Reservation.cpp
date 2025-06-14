@@ -60,7 +60,18 @@ void Reservation::setNights(int _nights) {
 
 void Reservation::calculateTotalPrice() {
     if (room) {
-        totalPrice = room->getPricePerNight() * nights;
+        /// occupancyRate = брой заети / общо
+        double rate = 0.0;
+        if (Room::getNextRoomNum() > 1) {
+            int occupied = 0;
+            for (int i = 0; i < Room::getNextRoomNum() - 1; i++) {
+                // count RESERVED rooms (само за реален масив)
+            }
+            rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
+        }
+        totalPrice = room->getDynamicPrice(checkInDate, rate) * nights;
+
+
     } else {
         totalPrice = 0;
     }

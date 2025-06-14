@@ -307,7 +307,6 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
         std::cout << "Number of nights must be positive :(" << std::endl;
         return;
     }
-
     reservations[reservationCount++] = new Reservation(
         reservationCount + 1, selectedGuest, selectedRoom, date, nights);
     selectedRoom->setStatus(RESERVED);

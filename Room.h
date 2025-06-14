@@ -34,4 +34,7 @@ public:
     void print() const;
     void saveToFile(std::ofstream& out) const;
     static Room* loadFromFile(std::ifstream& in);
+
+    double getDynamicPrice(const char* dateStr, double occupancyRate) const;
+    static int getNextRoomNum();
 };
