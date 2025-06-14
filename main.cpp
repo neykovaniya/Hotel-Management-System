@@ -380,6 +380,27 @@ User *login(User *users[], int userCount) {
     return nullptr;
 }
 
+void updateGuestStatuses(Guest *guests[], int guestCount, Reservation *reservations[], int reservationCount) {
+    for (int i = 0; i < guestCount; i++) {
+        int resCount = 0;
+        int guestID = guests[i]->getID();
+
+        for (int j = 0; j < reservationCount; j++) {
+            if (reservations[j]->getGuest()->getID() == guestID) {
+                resCount++;
+            }
+        }
+
+        if (resCount <= 2) {
+            guests[i]->setStatus(REGULAR);
+        } else if (resCount <= 5) {
+            guests[i]->setStatus(GOLD);
+        } else {
+            guests[i]->setStatus(PLATINUM);
+        }
+    }
+}
+
 void printMenu(Role role) {
     std::cout << "----------menu----------" << std::endl;
     switch (role) {
@@ -482,6 +503,7 @@ int main() {
                     case 4: registerNewGuest(guests, guestCount);
                         break;
                     case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount);
+                        updateGuestStatuses(guests, guestCount, reservations, reservationCount);
                         break;
                     case 6: showAvailableRooms(rooms, roomCount);
                         break;
@@ -512,6 +534,7 @@ int main() {
                     case 4: registerNewGuest(guests, guestCount);
                         break;
                     case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount);
+                        updateGuestStatuses(guests, guestCount, reservations, reservationCount);
                         break;
                     case 6: showAvailableRooms(rooms, roomCount);
                         break;
