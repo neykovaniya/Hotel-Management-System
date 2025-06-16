@@ -241,7 +241,9 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
     logAction(currentUser->getUsername(), "Added new room");
 }
 
-void editReservation(Reservation *reservations[], int reservationCount, User *currentUser) {
+void editReservation(Reservation *reservations[], int reservationCount,
+                     Room* rooms[], int roomCount, User *currentUser)
+{
     int id;
     std::cout << "Enter reservation ID to edit: ";
     std::cin >> id;
@@ -287,7 +289,7 @@ void editReservation(Reservation *reservations[], int reservationCount, User *cu
     } else {
         std::cout << "Invalid nights input.\n";
     }
-
+    r->calculateTotalPrice(rooms,roomCount);
     std::cout << "Reservation updated successfully.\n";
     logAction(currentUser->getUsername(), "Updated reservation");
 }
@@ -747,7 +749,7 @@ int main() {
                         break;
                     case 9: addRoom(rooms, roomCount, currentUser);
                         break;
-                    case 10: editReservation(reservations, reservationCount, currentUser);
+                    case 10: editReservation(reservations, reservationCount, rooms, roomCount, currentUser);
                         break;
                     case 11: deleteReservation(reservations, reservationCount, currentUser);
                         break;
@@ -783,7 +785,7 @@ int main() {
                         break;
                     case 7: searchGuestByName(guests, guestCount);
                         break;
-                    case 8: editReservation(reservations, reservationCount, currentUser);
+                    case 8: editReservation(reservations, reservationCount, rooms, roomCount, currentUser);
                         break;
                     case 9: deleteReservation(reservations, reservationCount, currentUser);
                         break;
