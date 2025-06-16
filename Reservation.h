@@ -22,6 +22,7 @@ public:
     void setDate(const char* _date);
     void setNights(int _nights);
     void calculateTotalPrice();
+    void calculateTotalPrice(Room* rooms[], int roomCount);
     [[nodiscard]] int getID() const;
     [[nodiscard]] Guest* getGuest() const;
     [[nodiscard]] Room* getRoom() const;

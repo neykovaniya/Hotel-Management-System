@@ -90,6 +90,34 @@ void Reservation::calculateTotalPrice() {
     }
 }
 
+void Reservation::calculateTotalPrice(Room* rooms[], int roomCount) {
+    if (!room) {
+        totalPrice = 0;
+        return;
+    }
+
+    double occupancyRate = 0.0;
+    if (roomCount > 0) {
+        int reserved = 0;
+        for (int i = 0; i < roomCount; ++i)
+            if (rooms[i]->getStatus() == RESERVED) reserved++;
+        occupancyRate = reserved * 1.0 / roomCount;
+    }
+
+    double basePrice = room->getDynamicPrice(checkInDate, occupancyRate) * nights;
+
+    if (guest) {
+        switch (guest->getStatus()) {
+            case GOLD: basePrice *= 0.90; break;
+            case PLATINUM: basePrice *= 0.80; break;
+            default: break;
+        }
+    }
+
+    totalPrice = basePrice;
+}
+
+
 int Reservation::getID() const {
     return id;
 }
