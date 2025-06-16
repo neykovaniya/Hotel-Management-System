@@ -589,7 +589,7 @@ int main() {
     Reservation *reservations[MAX_RESERVATIONS];
     int reservationCount = 0;
     std::ifstream resIn("reservations.txt");
-    while (resIn) {
+    while (resIn && reservationCount < MAX_RESERVATIONS) {
         Reservation *res = Reservation::loadFromFile(resIn, guests, guestCount, rooms, roomCount);
         if (res) reservations[reservationCount++] = res;
     }
