@@ -12,7 +12,85 @@ const int MAX_RESERVATIONS = 10;
 const int MAX_USERS = 10;
 const int BUFFER_SIZE = 200;
 
-void logAction(const char* username, const char* actionDetail, int value1 = -1, int value2 = -1) {
+void generateRevenueReportByDate(Reservation *reservations[], int reservationCount) {
+    const int MAX_UNIQUE_DATES = 500;
+    char uniqueDays[MAX_UNIQUE_DATES][11] = {};
+    char uniqueMonths[MAX_UNIQUE_DATES][8] = {};
+    char uniqueYears[MAX_UNIQUE_DATES][5] = {};
+
+    double revenuePerDay[MAX_UNIQUE_DATES] = {};
+    double revenuePerMonth[MAX_UNIQUE_DATES] = {};
+    double revenuePerYear[MAX_UNIQUE_DATES] = {};
+
+    int dayCount = 0, monthCount = 0, yearCount = 0;
+
+    for (int i = 0; i < reservationCount; i++) {
+        const char *date = reservations[i]->getCheckInDate();
+        double price = reservations[i]->getTotalPrice();
+
+        bool foundDay = false;
+        for (int j = 0; j < dayCount; j++) {
+            if (strcmp(uniqueDays[j], date) == 0) {
+                revenuePerDay[j] += price;
+                foundDay = true;
+                break;
+            }
+        }
+        if (!foundDay && dayCount < MAX_UNIQUE_DATES) {
+            strcpy(uniqueDays[dayCount], date);
+            revenuePerDay[dayCount++] = price;
+        }
+
+        char month[8] = {};
+        strncpy(month, date + 3, 7);
+
+        bool foundMonth = false;
+        for (int j = 0; j < monthCount; j++) {
+            if (strcmp(uniqueMonths[j], month) == 0) {
+                revenuePerMonth[j] += price;
+                foundMonth = true;
+                break;
+            }
+        }
+        if (!foundMonth && monthCount < MAX_UNIQUE_DATES) {
+            strcpy(uniqueMonths[monthCount], month);
+            revenuePerMonth[monthCount++] = price;
+        }
+
+        char year[5] = {};
+        strncpy(year, date + 6, 4);
+
+        bool foundYear = false;
+        for (int j = 0; j < yearCount; j++) {
+            if (strcmp(uniqueYears[j], year) == 0) {
+                revenuePerYear[j] += price;
+                foundYear = true;
+                break;
+            }
+        }
+        if (!foundYear && yearCount < MAX_UNIQUE_DATES) {
+            strcpy(uniqueYears[yearCount], year);
+            revenuePerYear[yearCount++] = price;
+        }
+    }
+
+    std::cout << "\n--- Revenue by Day ---\n";
+    for (int i = 0; i < dayCount; i++) {
+        std::cout << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN\n";
+    }
+
+    std::cout << "\n--- Revenue by Month ---\n";
+    for (int i = 0; i < monthCount; i++) {
+        std::cout << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN\n";
+    }
+
+    std::cout << "\n--- Revenue by Year ---\n";
+    for (int i = 0; i < yearCount; i++) {
+        std::cout << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN\n";
+    }
+}
+
+void logAction(const char *username, const char *actionDetail, int value1 = -1, int value2 = -1) {
     std::ofstream log("log.txt", std::ios::app);
     if (!log) return;
 
@@ -25,7 +103,7 @@ void logAction(const char* username, const char* actionDetail, int value1 = -1, 
 }
 
 
-void addRoom(Room *rooms[], int &roomCount, User* currentUser) {
+void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
     if (roomCount >= MAX_ROOMS) {
         std::cout << "No space for more rooms :(" << std::endl;
         return;
@@ -57,11 +135,9 @@ void addRoom(Room *rooms[], int &roomCount, User* currentUser) {
     rooms[roomCount++] = new Room(static_cast<roomType>(typeInput), AVAILABLE, price);
     std::cout << "Room added successfully :)\n";
     logAction(currentUser->getUsername(), "Added new room");
-
-
 }
 
-void editReservation(Reservation *reservations[], int reservationCount, User* currentUser) {
+void editReservation(Reservation *reservations[], int reservationCount, User *currentUser) {
     int id;
     std::cout << "Enter reservation ID to edit: ";
     std::cin >> id;
@@ -112,7 +188,7 @@ void editReservation(Reservation *reservations[], int reservationCount, User* cu
     logAction(currentUser->getUsername(), "Updated reservation");
 }
 
-void deleteReservation(Reservation *reservations[], int &reservationCount, User* currentUser) {
+void deleteReservation(Reservation *reservations[], int &reservationCount, User *currentUser) {
     int id;
     std::cout << "Enter reservation ID to delete: ";
     std::cin >> id;
@@ -147,8 +223,6 @@ void deleteReservation(Reservation *reservations[], int &reservationCount, User*
     reservationCount--;
     std::cout << "Reservation deleted successfully.\n";
     logAction(currentUser->getUsername(), "Deleted reservation with ID:", id);
-
-
 }
 
 bool safeInputInt(const char *message, int &value) {
@@ -198,7 +272,7 @@ void showAvailableRooms(Room *rooms[], int roomCount) {
     }
 }
 
-void registerNewGuest(Guest *guests[], int &guestCount, User* currentUser) {
+void registerNewGuest(Guest *guests[], int &guestCount, User *currentUser) {
     if (guestCount >= MAX_GUESTS) {
         std::cout << "No space for more guests :(" << std::endl;
         return;
@@ -261,7 +335,7 @@ void registerNewGuest(Guest *guests[], int &guestCount, User* currentUser) {
 
 
 void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations[],
-                       int roomCount, int guestCount, int &reservationCount, User* currentUser) {
+                       int roomCount, int guestCount, int &reservationCount, User *currentUser) {
     if (reservationCount >= MAX_RESERVATIONS) {
         std::cout << "No space for more reservations :(" << std::endl;
         return;
@@ -333,9 +407,8 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
     selectedRoom->setStatus(RESERVED);
 
     std::cout << "Reservation created successfully :)" << std::endl;
-    logAction(currentUser->getUsername(), "Created reservation for GuestID:", selectedGuest->getID(), selectedRoom->getRoomNum());
-
-
+    logAction(currentUser->getUsername(), "Created reservation for GuestID:", selectedGuest->getID(),
+              selectedRoom->getRoomNum());
 }
 
 void searchGuestByName(Guest *guests[], int guestCount) {
@@ -422,7 +495,7 @@ void updateGuestStatuses(Guest *guests[], int guestCount, Reservation *reservati
     }
 }
 
-void registerUser(User *users[], int &userCount, User* currentUser) {
+void registerUser(User *users[], int &userCount, User *currentUser) {
     if (userCount >= MAX_USERS) {
         std::cout << "Max number of users reached.\n";
         return;
@@ -451,8 +524,6 @@ void registerUser(User *users[], int &userCount, User* currentUser) {
     users[userCount++] = new User(uname, pass, static_cast<Role>(roleInput));
     std::cout << "User created successfully!\n";
     logAction(currentUser->getUsername(), "Registered new user");
-
-
 }
 
 void printMenu(Role role) {
@@ -471,7 +542,8 @@ void printMenu(Role role) {
             std::cout << "10. Edit reservation" << std::endl;
             std::cout << "11. Delete reservation" << std::endl;
             std::cout << "12. Create new user" << std::endl;
-            std::cout << "13. Exit" << std::endl;
+            std::cout << "13. Show revenue by day/month/year\n";
+            std::cout << "14. Exit" << std::endl;
             break;
         case RECEPTIONIST:
             std::cout << "1. Show all rooms" << std::endl;
@@ -559,7 +631,8 @@ int main() {
                         break;
                     case 4: registerNewGuest(guests, guestCount, currentUser);
                         break;
-                    case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount, currentUser);
+                    case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount,
+                                              currentUser);
                         updateGuestStatuses(guests, guestCount, reservations, reservationCount);
                         break;
                     case 6: showAvailableRooms(rooms, roomCount);
@@ -570,13 +643,16 @@ int main() {
                         break;
                     case 9: addRoom(rooms, roomCount, currentUser);
                         break;
-                    case 10: editReservation(reservations, reservationCount,currentUser);
+                    case 10: editReservation(reservations, reservationCount, currentUser);
                         break;
                     case 11: deleteReservation(reservations, reservationCount, currentUser);
                         break;
                     case 12: registerUser(users, userCount, currentUser);
                         break;
-                    case 13: std::cout << "Bye bye :)";
+                    case 13:
+                        generateRevenueReportByDate(reservations, reservationCount);
+                        break;
+                    case 14: std::cout << "Bye bye :)";
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -590,16 +666,17 @@ int main() {
                         break;
                     case 3: showAllReservations(reservations, reservationCount);
                         break;
-                    case 4: registerNewGuest(guests, guestCount,currentUser);
+                    case 4: registerNewGuest(guests, guestCount, currentUser);
                         break;
-                    case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount, currentUser);
+                    case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount,
+                                              currentUser);
                         updateGuestStatuses(guests, guestCount, reservations, reservationCount);
                         break;
                     case 6: showAvailableRooms(rooms, roomCount);
                         break;
                     case 7: searchGuestByName(guests, guestCount);
                         break;
-                    case 8: editReservation(reservations, reservationCount,currentUser);
+                    case 8: editReservation(reservations, reservationCount, currentUser);
                         break;
                     case 9: deleteReservation(reservations, reservationCount, currentUser);
                         break;
@@ -622,7 +699,7 @@ int main() {
                 }
                 break;
         }
-    } while (!((currentUser->getRole() == MANAGER && choice == 13) ||
+    } while (!((currentUser->getRole() == MANAGER && choice == 14) ||
                (currentUser->getRole() == RECEPTIONIST && choice == 10) ||
                (currentUser->getRole() == ACCOUNTANT && choice == 3)));
 
