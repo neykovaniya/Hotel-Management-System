@@ -60,16 +60,29 @@ void Reservation::setNights(int _nights) {
 
 void Reservation::calculateTotalPrice() {
     if (room) {
-        /// occupancyRate = брой заети / общо
         double rate = 0.0;
         if (Room::getNextRoomNum() > 1) {
             int occupied = 0;
             for (int i = 0; i < Room::getNextRoomNum() - 1; i++) {
-                // count RESERVED rooms (само за реален масив)
             }
             rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
         }
-        totalPrice = room->getDynamicPrice(checkInDate, rate) * nights;
+        double basePrice = room->getDynamicPrice(checkInDate, rate) * nights;
+        if (guest) {
+            switch (guest->getStatus()) {
+                case GOLD:
+                    basePrice *= 0.90;
+                break;
+                case PLATINUM:
+                    basePrice *= 0.80;
+                break;
+                default:
+                    break;
+            }
+        }
+
+        totalPrice = basePrice;
+
 
 
     } else {
@@ -110,7 +123,36 @@ void Reservation::print() const {
     if (room) room->print();
     std::cout << "Check-in date: " << checkInDate << std::endl;
     std::cout << "Nights: " << nights << std::endl;
+    double rate = 0.0;
+    if (Room::getNextRoomNum() > 1) {
+        int occupied = 0;
+        for (int i = 0; i < Room::getNextRoomNum() - 1; i++) {
+        }
+        rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
+    }
+    double dynamicPrice = room->getDynamicPrice(checkInDate, rate) * nights;
+
+    std::cout << "Base Price (w/o discount): " << dynamicPrice << std::endl;
+
+    if (guest) {
+        double discount = 0.0;
+        switch (guest->getStatus()) {
+            case GOLD:
+                discount = 0.10;
+            break;
+            case PLATINUM:
+                discount = 0.20;
+            break;
+            default:
+                break;
+        }
+        if (discount > 0.0) {
+            std::cout << "Applied Discount: " << (discount * 100) << "%" << std::endl;
+        }
+    }
+
     std::cout << "Total Price: " << totalPrice << std::endl;
+
 }
 
 void Reservation::dateValidation(const char* _date) {
