@@ -398,6 +398,36 @@ void updateGuestStatuses(Guest *guests[], int guestCount, Reservation *reservati
     }
 }
 
+void registerUser(User *users[], int &userCount) {
+    if (userCount >= MAX_USERS) {
+        std::cout << "Max number of users reached.\n";
+        return;
+    }
+
+    char uname[BUFFER_SIZE], pass[BUFFER_SIZE];
+    int roleInput;
+
+    std::cin.ignore();
+    std::cout << "Enter new username: ";
+    std::cin.getline(uname, BUFFER_SIZE);
+
+    std::cout << "Enter password: ";
+    std::cin.getline(pass, BUFFER_SIZE);
+
+    std::cout << "Select role (0 - MANAGER, 1 - RECEPTIONIST, 2 - ACCOUNTANT): ";
+    std::cin >> roleInput;
+
+    if (roleInput < 0 || roleInput > 2 || std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(BUFFER_SIZE, '\n');
+        std::cout << "Invalid role selected.\n";
+        return;
+    }
+
+    users[userCount++] = new User(uname, pass, static_cast<Role>(roleInput));
+    std::cout << "User created successfully!\n";
+}
+
 void printMenu(Role role) {
     std::cout << "----------menu----------" << std::endl;
     switch (role) {
@@ -413,7 +443,8 @@ void printMenu(Role role) {
             std::cout << "9. Add new room" << std::endl;
             std::cout << "10. Edit reservation" << std::endl;
             std::cout << "11. Delete reservation" << std::endl;
-            std::cout << "12. Exit" << std::endl;
+            std::cout << "12. Create new user" << std::endl;
+            std::cout << "13. Exit" << std::endl;
             break;
         case RECEPTIONIST:
             std::cout << "1. Show all rooms" << std::endl;
@@ -469,7 +500,7 @@ int main() {
     int userCount = 0;
     std::ifstream userIn("users.txt");
     while (userIn) {
-        User* u = User::loadFromFile(userIn);
+        User *u = User::loadFromFile(userIn);
         if (u) users[userCount++] = u;
     }
     userIn.close();
@@ -516,7 +547,9 @@ int main() {
                         break;
                     case 11: deleteReservation(reservations, reservationCount);
                         break;
-                    case 12: std::cout << "Bye bye :)";
+                    case 12: registerUser(users, userCount);
+                        break;
+                    case 13: std::cout << "Bye bye :)";
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -562,7 +595,7 @@ int main() {
                 }
                 break;
         }
-    } while (!((currentUser->getRole() == MANAGER && choice == 12) ||
+    } while (!((currentUser->getRole() == MANAGER && choice == 13) ||
                (currentUser->getRole() == RECEPTIONIST && choice == 10) ||
                (currentUser->getRole() == ACCOUNTANT && choice == 3)));
 
