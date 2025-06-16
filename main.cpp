@@ -68,19 +68,17 @@ void generateRevenueAndOccupancyByRoomType(Reservation* reservations[], int rese
 }
 
 void generateRevenueReportByDate(Reservation *reservations[], int reservationCount) {
-    const int MAX_UNIQUE_DATES = 500;
+const int MAX_UNIQUE_DATES = 500;
     char uniqueDays[MAX_UNIQUE_DATES][11] = {};
     char uniqueMonths[MAX_UNIQUE_DATES][8] = {};
     char uniqueYears[MAX_UNIQUE_DATES][5] = {};
-
     double revenuePerDay[MAX_UNIQUE_DATES] = {};
     double revenuePerMonth[MAX_UNIQUE_DATES] = {};
     double revenuePerYear[MAX_UNIQUE_DATES] = {};
-
     int dayCount = 0, monthCount = 0, yearCount = 0;
 
     for (int i = 0; i < reservationCount; i++) {
-        const char *date = reservations[i]->getCheckInDate();
+        const char* date = reservations[i]->getCheckInDate();
         double price = reservations[i]->getTotalPrice();
 
         bool foundDay = false;
@@ -98,7 +96,6 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
 
         char month[8] = {};
         strncpy(month, date + 3, 7);
-
         bool foundMonth = false;
         for (int j = 0; j < monthCount; j++) {
             if (strcmp(uniqueMonths[j], month) == 0) {
@@ -114,7 +111,6 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
 
         char year[5] = {};
         strncpy(year, date + 6, 4);
-
         bool foundYear = false;
         for (int j = 0; j < yearCount; j++) {
             if (strcmp(uniqueYears[j], year) == 0) {
@@ -129,19 +125,72 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
         }
     }
 
+    std::ofstream report("report.txt");
+    if (!report) {
+        std::cout << "Could not open report.txt for writing.";
+        return;
+    }
+
     std::cout << "\n--- Revenue by Day ---\n";
+    report << "--- Revenue by Day ---\n";
     for (int i = 0; i < dayCount; i++) {
         std::cout << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN\n";
+        report << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN\n";
     }
 
     std::cout << "\n--- Revenue by Month ---\n";
+    report << "\n--- Revenue by Month ---\n";
     for (int i = 0; i < monthCount; i++) {
         std::cout << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN\n";
+        report << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN\n";
     }
 
     std::cout << "\n--- Revenue by Year ---\n";
+    report << "\n--- Revenue by Year ---\n";
     for (int i = 0; i < yearCount; i++) {
         std::cout << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN\n";
+        report << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN\n";
+    }
+
+    report.close();
+    // --- Revenue by Room ---
+    int roomNums[100] = {};
+    double roomRevenues[100] = {};
+    int roomCount = 0;
+
+    for (int i = 0; i < reservationCount; i++) {
+        int currentRoom = reservations[i]->getRoom()->getRoomNum();
+        double price = reservations[i]->getTotalPrice();
+        bool found = false;
+        for (int j = 0; j < roomCount; j++) {
+            if (roomNums[j] == currentRoom) {
+                roomRevenues[j] += price;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            roomNums[roomCount] = currentRoom;
+            roomRevenues[roomCount] = price;
+            roomCount++;
+        }
+    }
+
+    // Sort descending
+    for (int i = 0; i < roomCount - 1; i++) {
+        for (int j = i + 1; j < roomCount; j++) {
+            if (roomRevenues[j] > roomRevenues[i]) {
+                std::swap(roomRevenues[i], roomRevenues[j]);
+                std::swap(roomNums[i], roomNums[j]);
+            }
+        }
+    }
+
+    std::cout << "\n--- Top Earning Rooms ---\n";
+    report << "\n--- Top Earning Rooms ---\n";
+    for (int i = 0; i < roomCount; i++) {
+        std::cout << "Room " << roomNums[i] << ": " << roomRevenues[i] << " BGN\n";
+        report << "Room " << roomNums[i] << ": " << roomRevenues[i] << " BGN\n";
     }
 }
 
