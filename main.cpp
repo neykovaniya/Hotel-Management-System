@@ -61,7 +61,7 @@ void addRoom(Room *rooms[], int &roomCount, User* currentUser) {
 
 }
 
-void editReservation(Reservation *reservations[], int reservationCount) {
+void editReservation(Reservation *reservations[], int reservationCount, User* currentUser) {
     int id;
     std::cout << "Enter reservation ID to edit: ";
     std::cin >> id;
@@ -109,6 +109,7 @@ void editReservation(Reservation *reservations[], int reservationCount) {
     }
 
     std::cout << "Reservation updated successfully.\n";
+    logAction(currentUser->getUsername(), "Updated reservation");
 }
 
 void deleteReservation(Reservation *reservations[], int &reservationCount, User* currentUser) {
@@ -197,7 +198,7 @@ void showAvailableRooms(Room *rooms[], int roomCount) {
     }
 }
 
-void registerNewGuest(Guest *guests[], int &guestCount) {
+void registerNewGuest(Guest *guests[], int &guestCount, User* currentUser) {
     if (guestCount >= MAX_GUESTS) {
         std::cout << "No space for more guests :(" << std::endl;
         return;
@@ -252,6 +253,7 @@ void registerNewGuest(Guest *guests[], int &guestCount) {
 
 
     std::cout << "Guest registered successfully :)))" << std::endl;
+    logAction(currentUser->getUsername(), "Registered new guest");
     delete[] name;
     delete[] phone;
     delete[] email;
@@ -555,7 +557,7 @@ int main() {
                         break;
                     case 3: showAllReservations(reservations, reservationCount);
                         break;
-                    case 4: registerNewGuest(guests, guestCount);
+                    case 4: registerNewGuest(guests, guestCount, currentUser);
                         break;
                     case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount, currentUser);
                         updateGuestStatuses(guests, guestCount, reservations, reservationCount);
@@ -568,7 +570,7 @@ int main() {
                         break;
                     case 9: addRoom(rooms, roomCount, currentUser);
                         break;
-                    case 10: editReservation(reservations, reservationCount);
+                    case 10: editReservation(reservations, reservationCount,currentUser);
                         break;
                     case 11: deleteReservation(reservations, reservationCount, currentUser);
                         break;
@@ -588,7 +590,7 @@ int main() {
                         break;
                     case 3: showAllReservations(reservations, reservationCount);
                         break;
-                    case 4: registerNewGuest(guests, guestCount);
+                    case 4: registerNewGuest(guests, guestCount,currentUser);
                         break;
                     case 5: createReservation(rooms, guests, reservations, roomCount, guestCount, reservationCount, currentUser);
                         updateGuestStatuses(guests, guestCount, reservations, reservationCount);
@@ -597,7 +599,7 @@ int main() {
                         break;
                     case 7: searchGuestByName(guests, guestCount);
                         break;
-                    case 8: editReservation(reservations, reservationCount);
+                    case 8: editReservation(reservations, reservationCount,currentUser);
                         break;
                     case 9: deleteReservation(reservations, reservationCount, currentUser);
                         break;
