@@ -12,6 +12,61 @@ const int MAX_RESERVATIONS = 10;
 const int MAX_USERS = 10;
 const int BUFFER_SIZE = 200;
 
+// int toIntDate(const char* date) {
+//     return (date[6] - '0') * 1000000 + (date[7] - '0') * 100000 +
+//            (date[8] - '0') * 10000 + (date[3] - '0') * 1000 +
+//            (date[4] - '0') * 100 + (date[0] - '0') * 10 + (date[1] - '0');
+// }
+//
+// bool isRoomAvailable(Room* room, const char* newDate, int newNights, Reservation* reservations[], int reservationCount) {
+//     int newStart = toIntDate(newDate);
+//     int newEnd = newStart + newNights;
+//
+//     for (int i = 0; i < reservationCount; i++) {
+//         if (reservations[i]->getRoom()->getRoomNum() == room->getRoomNum()) {
+//             int existingStart = toIntDate(reservations[i]->getCheckInDate());
+//             int existingEnd = existingStart + reservations[i]->getNights();
+//
+//             if (!(newEnd <= existingStart || newStart >= existingEnd)) {
+//                 return false;
+//             }
+//         }
+//     }
+//     return true;
+// }
+void generateRevenueAndOccupancyByRoomType(Reservation* reservations[], int reservationCount) {
+    const int ROOM_TYPE_COUNT = 5;
+    double revenueByType[ROOM_TYPE_COUNT] = {};
+    int reservationCountByType[ROOM_TYPE_COUNT] = {};
+
+    for (int i = 0; i < reservationCount; i++) {
+        Room* r = reservations[i]->getRoom();
+        roomType type = r->getType();
+        revenueByType[type] += reservations[i]->getTotalPrice();
+        reservationCountByType[type]++;
+    }
+
+    const char* typeNames[ROOM_TYPE_COUNT] = {
+        "SINGLE", "DOUBLE", "DELUXE", "CONFERENCE_HALL", "APARTMENT"
+    };
+
+    std::ofstream out("room_report.txt");
+    if (!out) {
+        std::cout << "Could not open room_report.txt\n";
+        return;
+    }
+
+    std::cout << "\n--- Revenue and Occupancy by Room Type ---\n";
+    out << "--- Revenue and Occupancy by Room Type ---\n";
+    for (int i = 0; i < ROOM_TYPE_COUNT; i++) {
+        std::cout << typeNames[i] << ": " << revenueByType[i] << " BGN, "
+                  << reservationCountByType[i] << " reservations\n";
+        out << typeNames[i] << ": " << revenueByType[i] << " BGN, "
+            << reservationCountByType[i] << " reservations\n";
+    }
+    out.close();
+}
+
 void generateRevenueReportByDate(Reservation *reservations[], int reservationCount) {
     const int MAX_UNIQUE_DATES = 500;
     char uniqueDays[MAX_UNIQUE_DATES][11] = {};
@@ -366,7 +421,6 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
             std::cout << "Room number: " << rooms[i]->getRoomNum() << std::endl;
         }
     }
-
     int roomNum;
     if (!safeInputInt("Enter room number: ", roomNum)) return;
     Room *selectedRoom = nullptr;
@@ -543,7 +597,8 @@ void printMenu(Role role) {
             std::cout << "11. Delete reservation" << std::endl;
             std::cout << "12. Create new user" << std::endl;
             std::cout << "13. Show revenue by day/month/year\n";
-            std::cout << "14. Exit" << std::endl;
+            std::cout << "14. Revenue and occupancy by room type" << std::endl;
+            std::cout << "15. Exit" << std::endl;
             break;
         case RECEPTIONIST:
             std::cout << "1. Show all rooms" << std::endl;
@@ -652,7 +707,10 @@ int main() {
                     case 13:
                         generateRevenueReportByDate(reservations, reservationCount);
                         break;
-                    case 14: std::cout << "Bye bye :)";
+                    case 14:
+                        generateRevenueAndOccupancyByRoomType(reservations, reservationCount);
+                    break;
+                    case 15: std::cout << "Bye bye :)";
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -699,7 +757,7 @@ int main() {
                 }
                 break;
         }
-    } while (!((currentUser->getRole() == MANAGER && choice == 14) ||
+    } while (!((currentUser->getRole() == MANAGER && choice == 15) ||
                (currentUser->getRole() == RECEPTIONIST && choice == 10) ||
                (currentUser->getRole() == ACCOUNTANT && choice == 3)));
 
