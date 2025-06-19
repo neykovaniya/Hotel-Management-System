@@ -198,6 +198,8 @@ Guest *Guest::loadFromFile(std::ifstream &in) {
 
     int statusInt;
     in >> statusInt;
+    if (statusInt < 0 || statusInt > 2)
+        return nullptr;
     status = static_cast<guestStatus>(statusInt);
     in.ignore();
 
@@ -206,4 +208,8 @@ Guest *Guest::loadFromFile(std::ifstream &in) {
     delete[] phone;
     delete[] email;
     return g;
+}
+
+Guest* Guest::clone() const {
+    return new Guest(id, name, phone, email, status);
 }

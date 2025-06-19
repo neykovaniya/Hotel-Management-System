@@ -47,4 +47,6 @@ public:
     double getDynamicPrice(const char *dateStr, double occupancyRate) const;
 
     static int getNextRoomNum();
+
+    [[nodiscard]] Room* clone() const;
 };

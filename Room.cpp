@@ -115,3 +115,7 @@ double Room::getDynamicPrice(const char *dateStr, double occupancyRate) const {
 int Room::getNextRoomNum() {
     return nextRoomNum;
 }
+
+Room* Room::clone() const {
+    return new Room(roomNum, type, status, price);
+}

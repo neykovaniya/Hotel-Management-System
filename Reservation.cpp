@@ -3,20 +3,27 @@
 #include <cstring>
 #include "Reservation.h"
 
+const int MAX_SIZE = 200;
 void Reservation::free() {
     delete[] checkInDate;
     checkInDate = nullptr;
+
+    delete guest;
+    delete room;
+    guest = nullptr;
+    room = nullptr;
 }
 
 void Reservation::copyFrom(const Reservation &other) {
     id = other.id;
-    guest = other.guest;
-    room = other.room;
     nights = other.nights;
     totalPrice = other.totalPrice;
 
     checkInDate = new char[strlen(other.checkInDate) + 1];
     strcpy(checkInDate, other.checkInDate);
+
+    guest = other.guest ? other.guest->clone() : nullptr;
+    room = other.room ? other.room->clone() : nullptr;
 }
 
 Reservation::Reservation(int _id, Guest *_guest, Room *_room, const char *_checkInDate, int _nights) : id(_id),
@@ -58,39 +65,31 @@ void Reservation::setNights(int _nights) {
     calculateTotalPrice();
 }
 
+//редактирано
 void Reservation::calculateTotalPrice() {
     if (room) {
-        double rate = 0.0;
-        if (Room::getNextRoomNum() > 1) {
-            int occupied = 0;
-            for (int i = 0; i < Room::getNextRoomNum() - 1; i++) {
-            }
-            rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
-        }
+        double rate = 0.3; //фиксирана заетост
         double basePrice = room->getDynamicPrice(checkInDate, rate) * nights;
         if (guest) {
             switch (guest->getStatus()) {
                 case GOLD:
                     basePrice *= 0.90;
-                break;
+                    break;
                 case PLATINUM:
                     basePrice *= 0.80;
-                break;
+                    break;
                 default:
                     break;
             }
         }
 
         totalPrice = basePrice;
-
-
-
     } else {
         totalPrice = 0;
     }
 }
 
-void Reservation::calculateTotalPrice(Room* rooms[], int roomCount) {
+void Reservation::calculateTotalPrice(Room *rooms[], int roomCount) {
     if (!room) {
         totalPrice = 0;
         return;
@@ -108,8 +107,10 @@ void Reservation::calculateTotalPrice(Room* rooms[], int roomCount) {
 
     if (guest) {
         switch (guest->getStatus()) {
-            case GOLD: basePrice *= 0.90; break;
-            case PLATINUM: basePrice *= 0.80; break;
+            case GOLD: basePrice *= 0.90;
+                break;
+            case PLATINUM: basePrice *= 0.80;
+                break;
             default: break;
         }
     }
@@ -158,8 +159,10 @@ void Reservation::print() const {
         }
         rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
     }
-    double dynamicPrice = room->getDynamicPrice(checkInDate, rate) * nights;
-
+    double dynamicPrice = 0.0;
+    if (room) {
+        dynamicPrice = room->getDynamicPrice(checkInDate, rate) * nights;
+    }
     std::cout << "Base Price (w/o discount): " << dynamicPrice << std::endl;
 
     if (guest) {
@@ -167,10 +170,10 @@ void Reservation::print() const {
         switch (guest->getStatus()) {
             case GOLD:
                 discount = 0.10;
-            break;
+                break;
             case PLATINUM:
                 discount = 0.20;
-            break;
+                break;
             default:
                 break;
         }
@@ -180,10 +183,11 @@ void Reservation::print() const {
     }
 
     std::cout << "Total Price: " << totalPrice << std::endl;
-
 }
 
-void Reservation::dateValidation(const char* _date) {
+
+//редактирано
+void Reservation::dateValidation(const char *_date) {
     if (!_date) {
         throw std::invalid_argument("Date cannot be null :(");
     }
@@ -199,36 +203,55 @@ void Reservation::dateValidation(const char* _date) {
             throw std::invalid_argument("Date must contain digits and '.' :(");
         }
     }
-    int day = (_date[0] - '0') * 10 + (_date[1] - '0');
+
+    int day   = (_date[0] - '0') * 10 + (_date[1] - '0');
     int month = (_date[3] - '0') * 10 + (_date[4] - '0');
-    if (day < 1 || day > 31) {
-        throw std::invalid_argument("Day must be between 01 and 31 :(");
-    }
+    int year  = (_date[6] - '0') * 1000 + (_date[7] - '0') * 100 +
+                (_date[8] - '0') * 10 + (_date[9] - '0');
+
     if (month < 1 || month > 12) {
         throw std::invalid_argument("Month must be between 01 and 12 :(");
     }
-}
-void Reservation::saveToFile(std::ofstream& out) const {
-    out << id << '\n'
-        << guest->getID() << '\n'
-        << room->getRoomNum() << '\n'
-        << checkInDate << '\n'
-        << nights << '\n';
+
+    int daysInMonth[] = { 31, 28, 31, 30, 31, 30,
+                          31, 31, 30, 31, 30, 31 };
+
+    bool isLeap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    if (isLeap && month == 2) {
+        daysInMonth[1] = 29;
+    }
+
+    if (day < 1 || day > daysInMonth[month - 1]) {
+        throw std::invalid_argument("Invalid day for this month :(");
+    }
 }
 
-Reservation* Reservation::loadFromFile(std::ifstream& in, Guest* guests[], int guestCount, Room* rooms[], int roomCount) {
+
+void Reservation::saveToFile(std::ofstream &out) const {
+    out << id << '\n'
+            << guest->getID() << '\n'
+            << room->getRoomNum() << '\n'
+            << checkInDate << '\n'
+            << nights << '\n'
+            << totalPrice << '\n';
+}
+
+Reservation *Reservation::loadFromFile(std::ifstream &in, Guest *guests[], int guestCount, Room *rooms[],
+                                       int roomCount) {
     int id, guestID, roomNum, nights;
-    char date[200];
+    char date[MAX_SIZE];
 
     if (!(in >> id)) return nullptr;
     in >> guestID >> roomNum;
     in.ignore();
-    in.getline(date, 200);
+    in.getline(date, MAX_SIZE);
     in >> nights;
     in.ignore();
-
-    Guest* g = nullptr;
-    Room* r = nullptr;
+    double savedPrice;
+    in >> savedPrice;
+    in.ignore();
+    Guest *g = nullptr;
+    Room *r = nullptr;
 
     for (int i = 0; i < guestCount; i++) {
         if (guests[i]->getID() == guestID) {

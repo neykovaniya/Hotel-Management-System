@@ -55,4 +55,6 @@ public:
     void saveToFile(std::ofstream &out) const;
 
     static Guest *loadFromFile(std::ifstream &in);
+
+    [[nodiscard]] Guest* clone() const;
 };
