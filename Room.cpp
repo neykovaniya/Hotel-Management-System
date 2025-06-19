@@ -2,8 +2,10 @@
 #include <iostream>
 #include "Room.h"
 int Room::nextRoomNum = 1;
+
 Room::Room(roomType _type, roomStatus _status, double _price)
-    : roomNum(nextRoomNum++), type(_type), status(_status), price(_price) {}
+    : roomNum(nextRoomNum++), type(_type), status(_status), price(_price) {
+}
 
 Room::Room(int _roomNum, roomType _type, roomStatus _status, double _price)
     : roomNum(_roomNum), type(_type), status(_status), price(_price) {
@@ -11,6 +13,7 @@ Room::Room(int _roomNum, roomType _type, roomStatus _status, double _price)
         nextRoomNum = _roomNum + 1;
     }
 }
+
 void Room::setStatus(roomStatus _status) {
     status = _status;
 }
@@ -72,24 +75,29 @@ void Room::print() const {
     }
     std::cout << std::endl << "Price: " << price << std::endl;
 }
-void Room::saveToFile(std::ofstream& out) const {
+
+void Room::saveToFile(std::ofstream &out) const {
     out << roomNum << '\n'
-        << type << '\n'
-        << status << '\n'
-        << price << '\n';
+            << type << '\n'
+            << status << '\n'
+            << price << '\n';
 }
 
-Room* Room::loadFromFile(std::ifstream& in) {
+Room *Room::loadFromFile(std::ifstream &in) {
     int number, typeInt, statusInt;
     double price;
 
+    //редактирано
     if (!(in >> number)) return nullptr;
+    if (!(in >> typeInt)) return nullptr;
+    if (!(in >> statusInt)) return nullptr;
+    if (!(in >> price)) return nullptr;
     in >> typeInt >> statusInt >> price;
     in.ignore();
     return new Room(number, static_cast<roomType>(typeInt), static_cast<roomStatus>(statusInt), price);
 }
 
-double Room::getDynamicPrice(const char* dateStr, double occupancyRate) const {
+double Room::getDynamicPrice(const char *dateStr, double occupancyRate) const {
     double finalPrice = price;
 
     int month = (dateStr[3] - '0') * 10 + (dateStr[4] - '0');
