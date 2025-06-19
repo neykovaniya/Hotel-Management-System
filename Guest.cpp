@@ -3,6 +3,8 @@
 #include <fstream>
 #include "Guest.h"
 
+const int MAX_SIZE = 200;
+
 void Guest::free() {
     delete[] name;
     delete[] phone;
@@ -151,6 +153,10 @@ void Guest::emailValidation(const char *email) {
     if (!dot) {
         throw std::invalid_argument("Email must contain '.' after '@' :(");
     }
+    //редактирано
+    if (dot == at + 1) {
+        throw std::invalid_argument("Dot cannot be immediately after @ :(");
+    }
     if (email[0] == '@') {
         throw std::invalid_argument("Email cannot start with '@' :(");
     }
@@ -160,31 +166,34 @@ void Guest::emailValidation(const char *email) {
         }
     }
 }
-void Guest::saveToFile(std::ofstream& out) const {
+
+void Guest::saveToFile(std::ofstream &out) const {
     out << id << '\n'
-        << name << '\n'
-        << phone << '\n'
-        << email << '\n'
-        << status << '\n';
+            << name << '\n'
+            << phone << '\n'
+            << email << '\n'
+            << status << '\n';
 }
-Guest* Guest::loadFromFile(std::ifstream& in) {
+
+//редактирано
+Guest *Guest::loadFromFile(std::ifstream &in) {
     int id;
-    char buffer[200];
+    char buffer[MAX_SIZE];
     guestStatus status;
 
     if (!(in >> id)) return nullptr;
     in.ignore();
 
-    in.getline(buffer, 200);
-    char* name = new char[strlen(buffer) + 1];
+    in.getline(buffer, MAX_SIZE);
+    char *name = new char[strlen(buffer) + 1];
     strcpy(name, buffer);
 
-    in.getline(buffer, 200);
-    char* phone = new char[strlen(buffer) + 1];
+    in.getline(buffer, MAX_SIZE);
+    char *phone = new char[strlen(buffer) + 1];
     strcpy(phone, buffer);
 
-    in.getline(buffer, 200);
-    char* email = new char[strlen(buffer) + 1];
+    in.getline(buffer, MAX_SIZE);
+    char *email = new char[strlen(buffer) + 1];
     strcpy(email, buffer);
 
     int statusInt;
@@ -192,7 +201,7 @@ Guest* Guest::loadFromFile(std::ifstream& in) {
     status = static_cast<guestStatus>(statusInt);
     in.ignore();
 
-    Guest* g = new Guest(id, name, phone, email, status);
+    Guest *g = new Guest(id, name, phone, email, status);
     delete[] name;
     delete[] phone;
     delete[] email;
