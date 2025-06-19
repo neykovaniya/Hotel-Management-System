@@ -1,6 +1,3 @@
-//
-// Created by Niya Neykova on 25.05.25.
-//
 #pragma once
 enum Role {
     MANAGER,

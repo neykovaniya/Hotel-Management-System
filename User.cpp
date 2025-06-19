@@ -1,11 +1,10 @@
-//
-// Created by Niya Neykova on 25.05.25.
-//
 #include <iostream>
 #include <cstring>
 #include <stdexcept>
 #include <fstream>
 #include "User.h"
+
+const int MAX_SIZE = 1000;
 
 void User::copyFrom(const User &other) {
     role = other.role;
@@ -107,18 +106,19 @@ void User::passwordValidation(const char *_password) const {
     }
 }
 
-void User::saveToFile(std::ofstream& out) const {
+void User::saveToFile(std::ofstream &out) const {
     out << username << '\n'
-        << password << '\n'
-        << static_cast<int>(role) << '\n';
+            << password << '\n'
+            << static_cast<int>(role) << '\n';
 }
 
-User* User::loadFromFile(std::ifstream& in) {
+//редактирано
+User *User::loadFromFile(std::ifstream &in) {
     char uname[100], pass[100];
     int roleInt;
 
-    if (!in.getline(uname, 100)) return nullptr;
-    if (!in.getline(pass, 100)) return nullptr;
+    if (!in.getline(uname, MAX_SIZE)) return nullptr;
+    if (!in.getline(pass, MAX_SIZE)) return nullptr;
     if (!(in >> roleInt)) return nullptr;
     in.ignore();
 
