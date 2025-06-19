@@ -160,9 +160,7 @@ void Reservation::print() const {
         rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
     }
     double dynamicPrice = 0.0;
-    if (room) {
-        dynamicPrice = room->getDynamicPrice(checkInDate, rate) * nights;
-    }
+    dynamicPrice = room->getDynamicPrice(checkInDate, rate) * nights;
     std::cout << "Base Price (w/o discount): " << dynamicPrice << std::endl;
 
     if (guest) {

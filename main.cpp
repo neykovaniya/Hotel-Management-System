@@ -219,122 +219,137 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         return;
     }
 
-    std::cout << "Select room type:"<<std::endl;
-    std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT"<<std::endl;
     int typeInput;
-    std::cin >> typeInput;
+    while (true) {
+        std::cout << "Select room type:" << std::endl;
+        std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT" << std::endl;
+        std::cin >> typeInput;
 
-    if (std::cin.fail() || typeInput < 0 || typeInput > 4) {
+        if (!std::cin.fail() && typeInput >= 0 && typeInput <= 4) break;
+
         std::cin.clear();
         std::cin.ignore(200, '\n');
-        std::cout << "Invalid room type :("<<std::endl;
-        return;
+        std::cout << "Invalid room type :(. Try again!" << std::endl;
     }
 
     double price;
-    std::cout << "Enter price per night: ";
-    std::cin >> price;
+    while (true) {
+        std::cout << "Enter price per night: ";
+        std::cin >> price;
 
-    if (std::cin.fail() || price < 0) {
+        if (!std::cin.fail() && price >= 0) break;
+
         std::cin.clear();
         std::cin.ignore(200, '\n');
-        std::cout << "Invalid price :("<<std::endl;
-        return;
+        std::cout << "Invalid price :(. Try again!" << std::endl;
     }
 
     rooms[roomCount++] = new Room(static_cast<roomType>(typeInput), AVAILABLE, price);
-    std::cout << "Room added successfully :)"<<std::endl;
+    std::cout << "Room added successfully :)" << std::endl;
     logAction(currentUser->getUsername(), "Added new room");
 }
 
+
 void editReservation(Reservation *reservations[], int reservationCount,
                      Room *rooms[], int roomCount, User *currentUser) {
-    int id;
-    std::cout << "Enter reservation ID to edit: ";
-    std::cin >> id;
+    while (true) {
+        int id;
+        std::cout << "Enter reservation ID to edit: ";
+        std::cin >> id;
 
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(200, '\n');
-        std::cout << "Invalid input :("<<std::endl;
-        return;
-    }
-
-    Reservation *r = nullptr;
-    for (int i = 0; i < reservationCount; i++) {
-        if (reservations[i]->getID() == id) {
-            r = reservations[i];
-            break;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(200, '\n');
+            std::cout << "Invalid input :(. Try again!\n" << std::endl;
+            continue;
         }
-    }
 
-    if (!r) {
-        std::cout << "Reservation not found :("<<std::endl;
-        return;
-    }
+        Reservation *r = nullptr;
+        for (int i = 0; i < reservationCount; i++) {
+            if (reservations[i]->getID() == id) {
+                r = reservations[i];
+                break;
+            }
+        }
 
-    char newDate[200];
-    std::cin.ignore();
-    std::cout << "Enter new check-in date (DD.MM.YYYY): ";
-    std::cin.getline(newDate, 200);
+        if (!r) {
+            std::cout << "Reservation not found :(. Try again!\n" << std::endl;
+            continue;
+        }
 
-    try {
-        Reservation::dateValidation(newDate);
-        r->setDate(newDate);
-    } catch (const std::invalid_argument &e) {
-        std::cout << "Invalid date: " << e.what() << std::endl;
-    }
+        char newDate[200];
+        std::cin.ignore();
+        std::cout << "Enter new check-in date (DD.MM.YYYY): ";
+        std::cin.getline(newDate, 200);
 
-    int nights;
-    std::cout << "Enter new number of nights: ";
-    std::cin >> nights;
+        try {
+            Reservation::dateValidation(newDate);
+            r->setDate(newDate);
+        } catch (const std::invalid_argument &e) {
+            std::cout << "Invalid date: " << e.what() << "\nTry again!\n" << std::endl;
+            continue;
+        }
 
-    if (!std::cin.fail() && nights > 0) {
+        int nights;
+        std::cout << "Enter new number of nights: ";
+        std::cin >> nights;
+
+        if (std::cin.fail() || nights <= 0) {
+            std::cin.clear();
+            std::cin.ignore(200, '\n');
+            std::cout << "Invalid nights input :(. Try again!\n" << std::endl;
+            continue;
+        }
+
         r->setNights(nights);
-    } else {
-        std::cout << "Invalid nights input :("<<std::endl;
+        r->calculateTotalPrice(rooms, roomCount);
+        std::cout << "Reservation updated successfully :)\n" << std::endl;
+        logAction(currentUser->getUsername(), "Updated reservation");
+        break;
     }
-    r->calculateTotalPrice(rooms, roomCount);
-    std::cout << "Reservation updated successfully.\n";
-    logAction(currentUser->getUsername(), "Updated reservation");
 }
+
 
 void deleteReservation(Reservation *reservations[], int &reservationCount, User *currentUser) {
-    int id;
-    std::cout << "Enter reservation ID to delete: ";
-    std::cin >> id;
+    while (true) {
+        int id;
+        std::cout << "Enter reservation ID to delete: ";
+        std::cin >> id;
 
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(200, '\n');
-        std::cout << "Invalid input :("<<std::endl;
-        return;
-    }
-
-    int index = -1;
-    for (int i = 0; i < reservationCount; i++) {
-        if (reservations[i]->getID() == id) {
-            index = i;
-            break;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(200, '\n');
+            std::cout << "Invalid input :(. Try again!\n" << std::endl;
+            continue;
         }
+
+        int index = -1;
+        for (int i = 0; i < reservationCount; i++) {
+            if (reservations[i]->getID() == id) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1) {
+            std::cout << "Reservation not found :(. Try again!\n" << std::endl;
+            continue;
+        }
+
+        reservations[index]->getRoom()->setStatus(AVAILABLE);
+        delete reservations[index];
+
+        for (int i = index; i < reservationCount - 1; i++) {
+            reservations[i] = reservations[i + 1];
+        }
+
+        reservationCount--;
+        std::cout << "Reservation deleted successfully :))" << std::endl;
+        logAction(currentUser->getUsername(), "Deleted reservation with ID:", id);
+        break;
     }
-
-    if (index == -1) {
-        std::cout << "Reservation not found :("<<std::endl;
-        return;
-    }
-
-    reservations[index]->getRoom()->setStatus(AVAILABLE);
-    delete reservations[index];
-
-    for (int i = index; i < reservationCount - 1; i++) {
-        reservations[i] = reservations[i + 1];
-    }
-
-    reservationCount--;
-    std::cout << "Reservation deleted successfully :))"<<std::endl;
-    logAction(currentUser->getUsername(), "Deleted reservation with ID:", id);
 }
+
 
 bool safeInputInt(const char *message, int &value) {
     std::cout << message;
@@ -434,7 +449,9 @@ void registerNewGuest(Guest *guests[], int &guestCount, User *currentUser) {
         }
     }
 
-    guests[guestCount++] = new Guest(guestCount + 1, name, phone, email, REGULAR);
+    //редактирано
+    int newID = guestCount + 1;
+    guests[guestCount++] = new Guest(newID, name, phone, email, REGULAR);
 
 
     std::cout << "Guest registered successfully :)))" << std::endl;
@@ -512,8 +529,10 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
         std::cout << "Number of nights must be positive :(" << std::endl;
         return;
     }
+    //редактирано
+    int newIdRes=reservationCount+1;
     reservations[reservationCount++] = new Reservation(
-        reservationCount + 1, selectedGuest, selectedRoom, date, nights);
+        newIdRes, selectedGuest, selectedRoom, date, nights);
     selectedRoom->setStatus(RESERVED);
 
     std::cout << "Reservation created successfully :)" << std::endl;
@@ -523,47 +542,70 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
 
 void searchGuestByName(Guest *guests[], int guestCount) {
     std::cin.ignore();
-    char query[BUFFER_SIZE];
-    std::cout << "Enter name to search: ";
-    std::cin.getline(query, BUFFER_SIZE);
-    bool found = false;
-    for (int i = 0; i < guestCount; i++) {
-        if (strstr(guests[i]->getName(), query)) {
-            guests[i]->print();
-            std::cout << "-------------------" << std::endl;
-            found = true;
+
+    while (true) {
+        char query[BUFFER_SIZE];
+        std::cout << "Enter exact name to search: ";
+        std::cin.getline(query, BUFFER_SIZE);
+
+        if (strlen(query) == 0) {
+            std::cout << "Search term cannot be empty! Try again.\n" << std::endl;
+            continue;
         }
-    }
-    if (!found) {
-        std::cout << "No guests found with that name :(" << std::endl;
+
+        bool found = false;
+        for (int i = 0; i < guestCount; i++) {
+            if (strcmp(guests[i]->getName(), query) == 0) {
+                guests[i]->print();
+                std::cout << "-------------------" << std::endl;
+                found = true;
+            }
+        }
+
+        if (!found) {
+            std::cout << "No guests found with that exact name :( Try again.\n" << std::endl;
+            continue;
+        }
+
+        break;
     }
 }
+
+
 
 void searchReservationByDate(Reservation *reservations[], int count) {
     std::cin.ignore();
-    char queryDate[BUFFER_SIZE];
-    std::cout << "Enter date (DD.MM.YYYY): ";
-    std::cin.getline(queryDate, BUFFER_SIZE);
-    try {
-        Reservation::dateValidation(queryDate);
-    } catch (const std::invalid_argument &e) {
-        std::cout << "Invalid date: " << e.what() << std::endl;
-        return;
-    }
 
-    bool found = false;
-    for (int i = 0; i < count; i++) {
-        if (strcmp(reservations[i]->getCheckInDate(), queryDate) == 0) {
-            reservations[i]->print();
-            std::cout << "-------------------" << std::endl;
-            found = true;
+    while (true) {
+        char queryDate[BUFFER_SIZE];
+        std::cout << "Enter date (DD.MM.YYYY): ";
+        std::cin.getline(queryDate, BUFFER_SIZE);
+
+        try {
+            Reservation::dateValidation(queryDate);
+        } catch (const std::invalid_argument &e) {
+            std::cout << "Invalid date: " << e.what() << "\nTry again!\n" << std::endl;
+            continue;
         }
-    }
 
-    if (!found) {
-        std::cout << "No reservations found for this date :(" << std::endl;
+        bool found = false;
+        for (int i = 0; i < count; i++) {
+            if (strcmp(reservations[i]->getCheckInDate(), queryDate) == 0) {
+                reservations[i]->print();
+                std::cout << "-------------------" << std::endl;
+                found = true;
+            }
+        }
+
+        if (!found) {
+            std::cout << "No reservations found for this date :( Try again.\n" << std::endl;
+            continue;
+        }
+
+        break;
     }
 }
+
 
 User *login(User *users[], int userCount) {
     char uname[BUFFER_SIZE];
@@ -607,34 +649,51 @@ void updateGuestStatuses(Guest *guests[], int guestCount, Reservation *reservati
 
 void registerUser(User *users[], int &userCount, User *currentUser) {
     if (userCount >= MAX_USERS) {
-        std::cout << "Max number of users reached."<<std::endl;
+        std::cout << "Max number of users reached." << std::endl;
         return;
     }
 
-    char uname[BUFFER_SIZE], pass[BUFFER_SIZE];
-    int roleInput;
+    while (true) {
+        char uname[BUFFER_SIZE], pass[BUFFER_SIZE];
+        int roleInput;
 
-    std::cin.ignore();
-    std::cout << "Enter new username: ";
-    std::cin.getline(uname, BUFFER_SIZE);
+        std::cin.ignore();
 
-    std::cout << "Enter password: ";
-    std::cin.getline(pass, BUFFER_SIZE);
+        std::cout << "Enter new username: ";
+        std::cin.getline(uname, BUFFER_SIZE);
+        if (strlen(uname) < 1) {
+            std::cout << "Username must be at least 1 character. Try again!\n" << std::endl;
+            continue;
+        }
 
-    std::cout << "Select role (0 - MANAGER, 1 - RECEPTIONIST, 2 - ACCOUNTANT): ";
-    std::cin >> roleInput;
+        std::cout << "Enter password: ";
+        std::cin.getline(pass, BUFFER_SIZE);
+        if (strlen(pass) < 1) {
+            std::cout << "Password must be at least 1 character. Try again!\n" << std::endl;
+            continue;
+        }
 
-    if (roleInput < 0 || roleInput > 2 || std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(BUFFER_SIZE, '\n');
-        std::cout << "Invalid role selected :("<<std::endl;
-        return;
+        std::cout << "Select role (0 - MANAGER, 1 - RECEPTIONIST, 2 - ACCOUNTANT): ";
+        std::cin >> roleInput;
+        if (std::cin.fail() || roleInput < 0 || roleInput > 2) {
+            std::cin.clear();
+            std::cin.ignore(BUFFER_SIZE, '\n');
+            std::cout << "Invalid role selected :(. Try again!\n" << std::endl;
+            continue;
+        }
+
+        try {
+            users[userCount++] = new User(uname, pass, static_cast<Role>(roleInput));
+            std::cout << "User created successfully!" << std::endl;
+            logAction(currentUser->getUsername(), "Registered new user");
+            break;
+        } catch (const std::invalid_argument &e) {
+            std::cout << "Error: " << e.what() << "\nTry again!\n" << std::endl;
+            continue;
+        }
     }
-
-    users[userCount++] = new User(uname, pass, static_cast<Role>(roleInput));
-    std::cout << "User created successfully!"<<std::endl;
-    logAction(currentUser->getUsername(), "Registered new user");
 }
+
 
 void printMenu(Role role) {
     std::cout << "----------menu----------" << std::endl;
