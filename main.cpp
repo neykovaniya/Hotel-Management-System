@@ -206,7 +206,7 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
 
 void logAction(const char *username, const char *actionDetail, int value1 = -1, int value2 = -1) {
     std::ofstream log("log.txt", std::ios::app);
-    if (!log) return;
+    if (!log.is_open()) return;
 
     log << "[" << username << "] " << actionDetail;
     if (value1 != -1) log << " " << value1;
