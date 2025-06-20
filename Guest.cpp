@@ -183,15 +183,15 @@ Guest* Guest::loadFromFile(std::ifstream& in) {
     if (!(in >> id)) return nullptr;
     in.ignore();
 
-    in.getline(buffer, 200);
+    in.getline(buffer, MAX_SIZE);
     char* name = new char[strlen(buffer) + 1];
     strcpy(name, buffer);
 
-    in.getline(buffer, 200);
+    in.getline(buffer, MAX_SIZE);
     char* phone = new char[strlen(buffer) + 1];
     strcpy(phone, buffer);
 
-    in.getline(buffer, 200);
+    in.getline(buffer, MAX_SIZE);
     char* email = new char[strlen(buffer) + 1];
     strcpy(email, buffer);
 
@@ -201,9 +201,6 @@ Guest* Guest::loadFromFile(std::ifstream& in) {
     in.ignore();
 
     Guest* g = new Guest(id, name, phone, email, status);
-    delete[] name;
-    delete[] phone;
-    delete[] email;
     return g;
 }
 

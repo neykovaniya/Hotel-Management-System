@@ -68,7 +68,7 @@ void Reservation::setNights(int _nights) {
 //редактирано
 void Reservation::calculateTotalPrice() {
     if (room) {
-        double rate = 0.3; //фиксирана заетост
+        double rate = 0.0; //фиксирана заетост
         double basePrice = room->getDynamicPrice(checkInDate, rate) * nights;
         if (guest) {
             switch (guest->getStatus()) {

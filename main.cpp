@@ -7,7 +7,7 @@
 #include "Reservation.h"
 
 template<typename T>
-void mySwap(T& a, T& b) {
+void mySwap(T &a, T &b) {
     T temp = a;
     a = b;
     b = temp;
@@ -19,28 +19,41 @@ const int MAX_RESERVATIONS = 10;
 const int MAX_USERS = 10;
 const int BUFFER_SIZE = 200;
 
-// int toIntDate(const char* date) {
-//     return (date[6] - '0') * 1000000 + (date[7] - '0') * 100000 +
-//            (date[8] - '0') * 10000 + (date[3] - '0') * 1000 +
-//            (date[4] - '0') * 100 + (date[0] - '0') * 10 + (date[1] - '0');
-// }
-//
-// bool isRoomAvailable(Room* room, const char* newDate, int newNights, Reservation* reservations[], int reservationCount) {
-//     int newStart = toIntDate(newDate);
-//     int newEnd = newStart + newNights;
-//
-//     for (int i = 0; i < reservationCount; i++) {
-//         if (reservations[i]->getRoom()->getRoomNum() == room->getRoomNum()) {
-//             int existingStart = toIntDate(reservations[i]->getCheckInDate());
-//             int existingEnd = existingStart + reservations[i]->getNights();
-//
-//             if (!(newEnd <= existingStart || newStart >= existingEnd)) {
-//                 return false;
-//             }
-//         }
-//     }
-//     return true;
-// }
+
+int saveAll(Room *rooms[], int roomCount,
+            Guest *guests[], int guestCount,
+            Reservation *reservations[], int reservationCount,
+            User *users[], int userCount) {
+    std::ofstream guestOut("guests.txt");
+    if (!guestOut.is_open()) return -1;
+    for (int i = 0; i < guestCount; i++) {
+        guests[i]->saveToFile(guestOut);
+    }
+    guestOut.close();
+
+    std::ofstream roomOut("rooms.txt");
+    if (!roomOut.is_open()) return -1;
+    for (int i = 0; i < roomCount; i++) {
+        rooms[i]->saveToFile(roomOut);
+    }
+    roomOut.close();
+
+    std::ofstream resOut("reservations.txt");
+    if (!resOut.is_open()) return -1;
+    for (int i = 0; i < reservationCount; i++) {
+        reservations[i]->saveToFile(resOut);
+    }
+    resOut.close();
+
+    std::ofstream userOut("users.txt");
+    if (!userOut.is_open()) return -1;
+    for (int i = 0; i < userCount; i++) {
+        users[i]->saveToFile(userOut);
+    }
+    userOut.close();
+
+    return 0;
+}
 
 bool safeInputInt(const char *message, int &value) {
     std::cout << message;
@@ -53,6 +66,7 @@ bool safeInputInt(const char *message, int &value) {
     std::cin.ignore();
     return true;
 }
+
 bool safeInputDouble(const char *message, double &value) {
     std::cout << message;
     std::cin >> value;
@@ -83,17 +97,17 @@ void generateRevenueAndOccupancyByRoomType(Reservation *reservations[], int rese
 
     std::ofstream out("room_report.txt");
     if (!out) {
-        std::cout << "Could not open room_report.txt"<<std::endl;
+        std::cout << "Could not open room_report.txt" << std::endl;
         return;
     }
 
     std::cout << "\n--- Revenue and Occupancy by Room Type ---\n";
-    out << "--- Revenue and Occupancy by Room Type ---"<<std::endl;
+    out << "--- Revenue and Occupancy by Room Type ---" << std::endl;
     for (int i = 0; i < ROOM_TYPE_COUNT; i++) {
         std::cout << typeNames[i] << ": " << revenueByType[i] << " BGN, "
-                << reservationCountByType[i] << " reservations"<<std::endl;
+                << reservationCountByType[i] << " reservations" << std::endl;
         out << typeNames[i] << ": " << revenueByType[i] << " BGN, "
-                << reservationCountByType[i] << " reservations"<<std::endl;
+                << reservationCountByType[i] << " reservations" << std::endl;
     }
     out.close();
 }
@@ -130,7 +144,7 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
         }
 
         char month[MONTH_LENGTH] = {};
-        strncpy(month, date + 3, MONTH_LENGTH-1);
+        strncpy(month, date + 3, MONTH_LENGTH - 1);
         bool foundMonth = false;
         for (int j = 0; j < monthCount; j++) {
             if (strcmp(uniqueMonths[j], month) == 0) {
@@ -167,24 +181,24 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
     }
 
     std::cout << "\n--- Revenue by Day ---\n";
-    report << "--- Revenue by Day ---"<<std::endl;
+    report << "--- Revenue by Day ---" << std::endl;
     for (int i = 0; i < dayCount; i++) {
-        std::cout << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN"<<std::endl;
-        report << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN"<<std::endl;
+        std::cout << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN" << std::endl;
+        report << uniqueDays[i] << ": " << revenuePerDay[i] << " BGN" << std::endl;
     }
 
     std::cout << "\n--- Revenue by Month ---\n";
     report << "\n--- Revenue by Month ---\n";
     for (int i = 0; i < monthCount; i++) {
-        std::cout << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN"<<std::endl;
-        report << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN"<<std::endl;
+        std::cout << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN" << std::endl;
+        report << uniqueMonths[i] << ": " << revenuePerMonth[i] << " BGN" << std::endl;
     }
 
     std::cout << "\n--- Revenue by Year ---\n";
     report << "\n--- Revenue by Year ---\n";
     for (int i = 0; i < yearCount; i++) {
-        std::cout << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN" <<std::endl;
-        report << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN"<<std::endl;
+        std::cout << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN" << std::endl;
+        report << uniqueYears[i] << ": " << revenuePerYear[i] << " BGN" << std::endl;
     }
 
     report.close();
@@ -222,8 +236,8 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
     std::cout << "\n--- Top Earning Rooms ---\n";
     report << "\n--- Top Earning Rooms ---\n";
     for (int i = 0; i < roomCount; i++) {
-        std::cout << "Room " << roomNums[i] << ": " << roomRevenues[i] << " BGN"<<std::endl;
-        report << "Room " << roomNums[i] << ": " << roomRevenues[i] << " BGN"<<std::endl;
+        std::cout << "Room " << roomNums[i] << ": " << roomRevenues[i] << " BGN" << std::endl;
+        report << "Room " << roomNums[i] << ": " << roomRevenues[i] << " BGN" << std::endl;
     }
 }
 
@@ -253,11 +267,10 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         std::cout << "Select room type:" << std::endl;
         std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT" << std::endl;
         if (safeInputInt("Select room type: ", typeInput) &&
-    typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) {
+            typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) {
             break;
-    }
+        }
         std::cout << "Invalid room type :(. Try again!" << std::endl;
-
     }
 
     double price;
@@ -279,7 +292,7 @@ void editReservation(Reservation *reservations[], int reservationCount,
 
     while (true) {
         if (!safeInputInt("Enter reservation ID to edit: ", id)) {
-            std::cout<<"Invalid input. :("<<std::endl;
+            std::cout << "Invalid input. :(" << std::endl;
             continue;
         }
 
@@ -323,15 +336,16 @@ void editReservation(Reservation *reservations[], int reservationCount,
 }
 
 
-
 void deleteReservation(Reservation *reservations[], int &reservationCount, User *currentUser) {
+    int id;
+    int index = -1;
+
     while (true) {
-        int id;
         if (!safeInputInt("Enter reservation ID to delete: ", id)) {
+            std::cout << "Invalid input :(" << std::endl;
             continue;
         }
 
-        int index = -1;
         for (int i = 0; i < reservationCount; i++) {
             if (reservations[i]->getID() == id) {
                 index = i;
@@ -339,23 +353,23 @@ void deleteReservation(Reservation *reservations[], int &reservationCount, User 
             }
         }
 
-        if (index == -1) {
-            std::cout << "Reservation not found :(. Try again!" << std::endl;
-            continue;
-        }
+        if (index != -1) break;
 
-        reservations[index]->getRoom()->setStatus(AVAILABLE);
-        delete reservations[index];
-
-        for (int i = index; i < reservationCount - 1; i++) {
-            reservations[i] = reservations[i + 1];
-        }
-
-        reservationCount--;
-        std::cout << "Reservation deleted successfully :))" << std::endl;
-        logAction(currentUser->getUsername(), "Deleted reservation with ID:", id);
-        break;
+        std::cout << "Reservation not found :(. Try again!" << std::endl;
     }
+
+    reservations[index]->getRoom()->setStatus(AVAILABLE);
+
+    delete reservations[index];
+
+    for (int i = index; i < reservationCount - 1; i++) {
+        reservations[i] = reservations[i + 1];
+    }
+
+    reservationCount--;
+
+    std::cout << "Reservation deleted successfully :))" << std::endl;
+    logAction(currentUser->getUsername(), "Deleted reservation with ID:", id);
 }
 
 
@@ -463,6 +477,7 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
         return;
     }
 
+    Guest *selectedGuest = nullptr;
     while (true) {
         std::cout << "Guests:" << std::endl;
         for (int i = 0; i < guestCount; i++) {
@@ -471,22 +486,24 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
 
         int guestID;
         if (!safeInputInt("Enter guest ID: ", guestID)) {
-            std::cout << "Try again!\n" << std::endl;
+            std::cout << "Try again!" << std::endl;
             continue;
         }
 
-        Guest *selectedGuest = nullptr;
         for (int i = 0; i < guestCount; i++) {
             if (guests[i]->getID() == guestID) {
                 selectedGuest = guests[i];
                 break;
             }
         }
-        if (!selectedGuest) {
-            std::cout << "Invalid guest ID :( Try again!\n" << std::endl;
-            continue;
-        }
 
+        if (!selectedGuest) {
+            std::cout << "Invalid guest ID :( Try again!" << std::endl;
+        } else break;
+    }
+
+    Room *selectedRoom = nullptr;
+    while (true) {
         std::cout << "Available rooms:" << std::endl;
         for (int i = 0; i < roomCount; i++) {
             if (rooms[i]->getStatus() == AVAILABLE) {
@@ -496,58 +513,57 @@ void createReservation(Room *rooms[], Guest *guests[], Reservation *reservations
 
         int roomNum;
         if (!safeInputInt("Enter room number: ", roomNum)) {
-            std::cout << "Try again!\n" << std::endl;
+            std::cout << "Try again!" << std::endl;
             continue;
         }
 
-        Room *selectedRoom = nullptr;
         for (int i = 0; i < roomCount; i++) {
             if (rooms[i]->getRoomNum() == roomNum && rooms[i]->getStatus() == AVAILABLE) {
                 selectedRoom = rooms[i];
                 break;
             }
         }
+
         if (!selectedRoom) {
-            std::cout << "Invalid room number or room is not available :( Try again!\n" << std::endl;
-            continue;
-        }
+            std::cout << "Invalid room number or room is not available :( Try again!" << std::endl;
+        } else break;
+    }
 
-        std::cin.ignore();
-        char date[BUFFER_SIZE];
-        while (true) {
-            std::cout << "Enter check-in date (DD.MM.YYYY): ";
-            std::cin.getline(date, BUFFER_SIZE);
-            try {
-                Reservation::dateValidation(date);
-                break;
-            } catch (const std::invalid_argument &e) {
-                std::cout << "Invalid date: " << e.what() << "\nTry again!\n" << std::endl;
-            }
+    char date[BUFFER_SIZE];
+    while (true) {
+        std::cout << "Enter check-in date (DD.MM.YYYY): ";
+        std::cin.getline(date, BUFFER_SIZE);
+        try {
+            Reservation::dateValidation(date);
+            break;
+        } catch (const std::invalid_argument &e) {
+            std::cout << "Invalid date: " << e.what() << "\nTry again!" << std::endl;
         }
+    }
 
-        int nights;
+    int nights;
+    while (true) {
         if (!safeInputInt("Enter number of nights: ", nights)) {
-            std::cout << "Try again!\n" << std::endl;
+            std::cout << "Try again!" << std::endl;
             continue;
         }
-
         if (nights <= 0) {
-            std::cout << "Number of nights must be positive :( Try again!\n" << std::endl;
+            std::cout << "Number of nights must be positive :( Try again!" << std::endl;
             continue;
         }
-
-        int newIdRes = reservationCount + 1;
-        reservations[reservationCount] = new Reservation(
-    newIdRes, selectedGuest, selectedRoom, date, nights);
-        reservations[reservationCount]->calculateTotalPrice(rooms, roomCount);
-        reservationCount++;
-        selectedRoom->setStatus(RESERVED);
-
-        std::cout << "Reservation created successfully :)" << std::endl;
-        logAction(currentUser->getUsername(), "Created reservation for GuestID:",
-                  selectedGuest->getID(), selectedRoom->getRoomNum());
         break;
     }
+
+    int newIdRes = reservationCount + 1;
+    reservations[reservationCount] = new Reservation(
+        newIdRes, selectedGuest, selectedRoom, date, nights);
+    reservations[reservationCount]->calculateTotalPrice(rooms, roomCount);
+    reservationCount++;
+    selectedRoom->setStatus(RESERVED);
+
+    std::cout << "Reservation created successfully :)" << std::endl;
+    logAction(currentUser->getUsername(), "Created reservation for GuestID:",
+              selectedGuest->getID(), selectedRoom->getRoomNum());
 }
 
 
@@ -560,7 +576,7 @@ void searchGuestByName(Guest *guests[], int guestCount) {
         std::cin.getline(query, BUFFER_SIZE);
 
         if (strlen(query) == 0) {
-            std::cout << "Search term cannot be empty! Try again.\n" << std::endl;
+            std::cout << "Search term cannot be empty! Try again." << std::endl;
             continue;
         }
 
@@ -574,14 +590,13 @@ void searchGuestByName(Guest *guests[], int guestCount) {
         }
 
         if (!found) {
-            std::cout << "No guests found with that exact name :( Try again.\n" << std::endl;
+            std::cout << "No guests found with that exact name :( Try again." << std::endl;
             continue;
         }
 
         break;
     }
 }
-
 
 
 void searchReservationByDate(Reservation *reservations[], int count) {
@@ -595,7 +610,7 @@ void searchReservationByDate(Reservation *reservations[], int count) {
         try {
             Reservation::dateValidation(queryDate);
         } catch (const std::invalid_argument &e) {
-            std::cout << "Invalid date: " << e.what() << "\nTry again!\n" << std::endl;
+            std::cout << "Invalid date: " << e.what() << "\nTry again!" << std::endl;
             continue;
         }
 
@@ -609,7 +624,7 @@ void searchReservationByDate(Reservation *reservations[], int count) {
         }
 
         if (!found) {
-            std::cout << "No reservations found for this date :( Try again.\n" << std::endl;
+            std::cout << "No reservations found for this date :( Try again." << std::endl;
             continue;
         }
 
@@ -664,55 +679,58 @@ void registerUser(User *users[], int &userCount, User *currentUser) {
         return;
     }
 
+    char uname[BUFFER_SIZE], pass[BUFFER_SIZE];
+    int roleInput;
+
+    std::cin.ignore();
+
     while (true) {
-        char uname[BUFFER_SIZE], pass[BUFFER_SIZE];
-        int roleInput;
-
-        std::cin.ignore();
-
         std::cout << "Enter new username: ";
         std::cin.getline(uname, BUFFER_SIZE);
         if (strlen(uname) < 1) {
-            std::cout << "Username must be at least 1 character. Try again!\n" << std::endl;
+            std::cout << "Username must be at least 1 character. Try again!" << std::endl;
+            continue;
+        }
+
+        bool exists = false;
+        for (int i = 0; i < userCount; i++) {
+            if (strcmp(users[i]->getUsername(), uname) == 0) {
+                exists = true;
+                break;
+            }
+        }
+        if (exists) {
+            std::cout << "Username already taken. Try another." << std::endl;
             continue;
         }
 
         std::cout << "Enter password: ";
         std::cin.getline(pass, BUFFER_SIZE);
         if (strlen(pass) < 1) {
-            std::cout << "Password must be at least 1 character. Try again!\n" << std::endl;
+            std::cout << "Password must be at least 1 character. Try again!" << std::endl;
             continue;
         }
 
-        std::cout << "Select role (0 - MANAGER, 1 - RECEPTIONIST, 2 - ACCOUNTANT): ";
-        std::cin >> roleInput;
-        if (std::cin.fail() || roleInput < 0 || roleInput > 2) {
+        while (true) {
+            std::cout << "Select role (0 - MANAGER, 1 - RECEPTIONIST, 2 - ACCOUNTANT): ";
+            std::cin >> roleInput;
+            if (!std::cin.fail() && roleInput >= 0 && roleInput <= 2) break;
+
             std::cin.clear();
             std::cin.ignore(BUFFER_SIZE, '\n');
             std::cout << "Invalid role selected :(. Try again!\n" << std::endl;
-            continue;
         }
 
         try {
-            bool exists = false;
-            for (int i = 0; i < userCount; i++) {
-                if (strcmp(users[i]->getUsername(), uname) == 0) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (exists) {
-                std::cout << "Username already taken. Try another.\n" << std::endl;
-                return;
-            }
             users[userCount++] = new User(uname, pass, static_cast<Role>(roleInput));
             std::cout << "User created successfully!" << std::endl;
             logAction(currentUser->getUsername(), "Registered new user");
             break;
         } catch (const std::invalid_argument &e) {
-            std::cout << "Error: " << e.what() << "\nTry again!\n" << std::endl;
-            continue;
+            std::cout << "Error: " << e.what() << "\nTry again!" << std::endl;
         }
+
+        std::cin.ignore();
     }
 }
 
@@ -760,44 +778,96 @@ void printMenu(Role role) {
 int main() {
     Room *rooms[MAX_ROOMS];
     int roomCount = 0;
-    std::ifstream roomIn("rooms.txt");
-    while (true) {
-        Room *r = Room::loadFromFile(roomIn);
-        if (!r) break;
-        rooms[roomCount++] = r;
-    }
-    roomIn.close();
 
+    std::ifstream roomIn("rooms.txt");
+    if (!roomIn) {
+        std::cout << "Could not open rooms.txt :(" << std::endl;
+    } else {
+        while (roomIn && roomCount < MAX_ROOMS) {
+            Room *r = Room::loadFromFile(roomIn);
+            if (!r) {
+                if (!roomIn.eof()) {
+                    std::cout << "Corrupted room record. Skipping...\n";
+                    roomIn.clear();
+                    roomIn.ignore(1000, '\n');
+                    continue;
+                }
+                break;
+            }
+            rooms[roomCount++] = r;
+        }
+        roomIn.close();
+    }
 
     Guest *guests[MAX_GUESTS];
     int guestCount = 0;
+
     std::ifstream guestIn("guests.txt");
-    while (true) {
-        Guest *g = Guest::loadFromFile(guestIn);
-        if (!g) break;
-        guests[guestCount++] = g;
+    if (!guestIn) {
+        std::cout << "Could not open guests.txt :(" << std::endl;
+    } else {
+        while (guestIn && guestCount < MAX_GUESTS) {
+            Guest *g = Guest::loadFromFile(guestIn);
+            if (!g) {
+                if (!guestIn.eof()) {
+                    std::cout << "Corrupted guest record. Skipping...\n";
+                    guestIn.clear();
+                    guestIn.ignore(1000, '\n');
+                    continue;
+                }
+                break;
+            }
+            guests[guestCount++] = g;
+        }
+        guestIn.close();
     }
-    guestIn.close();
 
 
     Reservation *reservations[MAX_RESERVATIONS];
     int reservationCount = 0;
+
     std::ifstream resIn("reservations.txt");
-    while (resIn && reservationCount < MAX_RESERVATIONS) {
-        Reservation *res = Reservation::loadFromFile(resIn, guests, guestCount, rooms, roomCount);
-        if (res) reservations[reservationCount++] = res;
-    }
-    resIn.close();
-    User *users[MAX_USERS];
-    int userCount = 0;
-    std::ifstream userIn("users.txt");
-    while (true) {
-        User *u = User::loadFromFile(userIn);
-        if (!u) break;
-        users[userCount++] = u;
+    if (!resIn) {
+        std::cout << "Could not open reservations.txt :(" << std::endl;
+    } else {
+        while (resIn && reservationCount < MAX_RESERVATIONS) {
+            Reservation *res = Reservation::loadFromFile(resIn, guests, guestCount, rooms, roomCount);
+            if (!res) {
+                if (!resIn.eof()) {
+                    std::cout << "Corrupted reservation record. Skipping...\n";
+                    resIn.clear();
+                    resIn.ignore(1000, '\n');
+                    continue;
+                }
+                break;
+            }
+            reservations[reservationCount++] = res;
+        }
+        resIn.close();
     }
 
-    userIn.close();
+    User *users[MAX_USERS];
+    int userCount = 0;
+
+    std::ifstream userIn("users.txt");
+    if (!userIn) {
+        std::cout << "Could not open users.txt :(" << std::endl;
+    } else {
+        while (userIn && userCount < MAX_USERS) {
+            User *u = User::loadFromFile(userIn);
+            if (!u) {
+                if (!userIn.eof()) {
+                    std::cout << "Corrupted user record. Skipping...\n";
+                    userIn.clear();
+                    userIn.ignore(1000, '\n');
+                    continue;
+                }
+                break;
+            }
+            users[userCount++] = u;
+        }
+        userIn.close();
+    }
 
     User *currentUser = login(users, userCount);
     if (!currentUser) return 1;
@@ -850,7 +920,12 @@ int main() {
                     case 14:
                         generateRevenueAndOccupancyByRoomType(reservations, reservationCount);
                         break;
-                    case 15: std::cout << "Bye bye :)";
+                    case 15:
+                        if (saveAll(rooms, roomCount, guests, guestCount, reservations, reservationCount, users,
+                                    userCount) == 0)
+                            std::cout << "Data saved successfully. Bye bye :)" << std::endl;
+                        else
+                            std::cout << "Error while saving data! Exiting anyway." << std::endl;
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -878,7 +953,12 @@ int main() {
                         break;
                     case 9: deleteReservation(reservations, reservationCount, currentUser);
                         break;
-                    case 10: std::cout << "Bye bye :)";
+                    case 10:
+                        if (saveAll(rooms, roomCount, guests, guestCount, reservations, reservationCount, users,
+                                    userCount) == 0)
+                            std::cout << "Data saved successfully. Bye bye :)" << std::endl;
+                        else
+                            std::cout << "Error while saving data! Exiting anyway." << std::endl;
                         break;
                     default: std::cout << "Invalid choice";
                         break;
@@ -890,8 +970,18 @@ int main() {
                         break;
                     case 2: searchReservationByDate(reservations, reservationCount);
                         break;
-                    case 3: std::cout << "Bye bye :)";
+                    case 3: generateRevenueReportByDate(reservations, reservationCount);
+                    break;
+                    case 4: generateRevenueAndOccupancyByRoomType(reservations, reservationCount);
+                    break;
+                    case 5:
+                        if (saveAll(rooms, roomCount, guests, guestCount, reservations, reservationCount, users,
+                                    userCount) == 0)
+                            std::cout << "Data saved successfully. Bye bye :)" << std::endl;
+                        else
+                            std::cout << "Error while saving data! Exiting anyway." << std::endl;
                         break;
+
                     default: std::cout << "Invalid choice";
                         break;
                 }
@@ -899,33 +989,8 @@ int main() {
         }
     } while (!((currentUser->getRole() == MANAGER && choice == 15) ||
                (currentUser->getRole() == RECEPTIONIST && choice == 10) ||
-               (currentUser->getRole() == ACCOUNTANT && choice == 3)));
+               (currentUser->getRole() == ACCOUNTANT && choice == 5)));
 
-    std::ofstream guestOut("guests.txt");
-    if(!guestOut.is_open()) return -1;
-    for (int i = 0; i < guestCount; i++) {
-        guests[i]->saveToFile(guestOut);
-    }
-    guestOut.close();
-    std::ofstream roomOut("rooms.txt");
-    if(!roomOut.is_open()) return -1;
-    for (int i = 0; i < roomCount; i++) {
-        rooms[i]->saveToFile(roomOut);
-    }
-    roomOut.close();
-    std::ofstream resOut("reservations.txt");
-    if(!resOut.is_open()) return -1;
-    for (int i = 0; i < reservationCount; i++) {
-        reservations[i]->saveToFile(resOut);
-    }
-    resOut.close();
-
-    std::ofstream userOut("users.txt");
-    if(!userOut.is_open()) return -1;
-    for (int i = 0; i < userCount; i++) {
-        users[i]->saveToFile(userOut);
-    }
-    userOut.close();
 
     for (int i = 0; i < roomCount; i++) delete rooms[i];
     for (int i = 0; i < guestCount; i++) delete guests[i];
