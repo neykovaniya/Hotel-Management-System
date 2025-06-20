@@ -220,7 +220,6 @@ void logAction(const char *username, const char *actionDetail, int value1 = -1, 
 void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
     const int ROOM_TYPE_MIN = 0;
     const int ROOM_TYPE_MAX = 4;
-    const int INPUT_BUFFER_SIZE = 200;
     if (roomCount >= MAX_ROOMS) {
         std::cout << "No space for more rooms :(" << std::endl;
         return;
@@ -235,7 +234,7 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         if (!std::cin.fail() && typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) break;
 
         std::cin.clear();
-        std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
+        std::cin.ignore(BUFFER_SIZE, '\n');
         std::cout << "Invalid room type :(. Try again!" << std::endl;
     }
 
@@ -247,7 +246,7 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         if (!std::cin.fail() && price >= 0) break;
 
         std::cin.clear();
-        std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
+        std::cin.ignore(BUFFER_SIZE, '\n');
         std::cout << "Invalid price :(. Try again!" << std::endl;
     }
 
@@ -266,7 +265,7 @@ void editReservation(Reservation *reservations[], int reservationCount,
 
         if (std::cin.fail()) {
             std::cin.clear();
-            std::cin.ignore(200, '\n');
+            std::cin.ignore(BUFFER_SIZE, '\n');
             std::cout << "Invalid input :(. Try again!\n" << std::endl;
             continue;
         }
@@ -287,13 +286,13 @@ void editReservation(Reservation *reservations[], int reservationCount,
         char newDate[200];
         std::cin.ignore();
         std::cout << "Enter new check-in date (DD.MM.YYYY): ";
-        std::cin.getline(newDate, 200);
+        std::cin.getline(newDate, BUFFER_SIZE);
 
         try {
             Reservation::dateValidation(newDate);
             r->setDate(newDate);
         } catch (const std::invalid_argument &e) {
-            std::cout << "Invalid date: " << e.what() << "\nTry again!\n" << std::endl;
+            std::cout << "Invalid date: " << e.what() << "\nTry again!" << std::endl;
             continue;
         }
 
@@ -303,14 +302,14 @@ void editReservation(Reservation *reservations[], int reservationCount,
 
         if (std::cin.fail() || nights <= 0) {
             std::cin.clear();
-            std::cin.ignore(200, '\n');
-            std::cout << "Invalid nights input :(. Try again!\n" << std::endl;
+            std::cin.ignore(BUFFER_SIZE, '\n');
+            std::cout << "Invalid nights input :(. Try again!" << std::endl;
             continue;
         }
 
         r->setNights(nights);
         r->calculateTotalPrice(rooms, roomCount);
-        std::cout << "Reservation updated successfully :)\n" << std::endl;
+        std::cout << "Reservation updated successfully :)" << std::endl;
         logAction(currentUser->getUsername(), "Updated reservation");
         break;
     }
