@@ -218,6 +218,9 @@ void logAction(const char *username, const char *actionDetail, int value1 = -1, 
 
 
 void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
+    const int ROOM_TYPE_MIN = 0;
+    const int ROOM_TYPE_MAX = 4;
+    const int INPUT_BUFFER_SIZE = 200;
     if (roomCount >= MAX_ROOMS) {
         std::cout << "No space for more rooms :(" << std::endl;
         return;
@@ -229,10 +232,10 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT" << std::endl;
         std::cin >> typeInput;
 
-        if (!std::cin.fail() && typeInput >= 0 && typeInput <= 4) break;
+        if (!std::cin.fail() && typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) break;
 
         std::cin.clear();
-        std::cin.ignore(200, '\n');
+        std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
         std::cout << "Invalid room type :(. Try again!" << std::endl;
     }
 
@@ -244,7 +247,7 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         if (!std::cin.fail() && price >= 0) break;
 
         std::cin.clear();
-        std::cin.ignore(200, '\n');
+        std::cin.ignore(INPUT_BUFFER_SIZE, '\n');
         std::cout << "Invalid price :(. Try again!" << std::endl;
     }
 
