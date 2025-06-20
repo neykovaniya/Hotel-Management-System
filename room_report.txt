@@ -1,0 +1,6 @@
+--- Revenue and Occupancy by Room Type ---
+SINGLE: 8.28 BGN, 1 reservations
+DOUBLE: 0 BGN, 0 reservations
+DELUXE: 0 BGN, 0 reservations
+CONFERENCE_HALL: 0 BGN, 0 reservations
+APARTMENT: 0 BGN, 0 reservations
