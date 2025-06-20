@@ -87,11 +87,7 @@ Room *Room::loadFromFile(std::ifstream &in) {
     int number, typeInt, statusInt;
     double price;
 
-    //редактирано
     if (!(in >> number)) return nullptr;
-    if (!(in >> typeInt)) return nullptr;
-    if (!(in >> statusInt)) return nullptr;
-    if (!(in >> price)) return nullptr;
     in >> typeInt >> statusInt >> price;
     in.ignore();
     return new Room(number, static_cast<roomType>(typeInt), static_cast<roomStatus>(statusInt), price);

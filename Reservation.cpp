@@ -153,12 +153,6 @@ void Reservation::print() const {
     std::cout << "Check-in date: " << checkInDate << std::endl;
     std::cout << "Nights: " << nights << std::endl;
     double rate = 0.0;
-    if (Room::getNextRoomNum() > 1) {
-        int occupied = 0;
-        for (int i = 0; i < Room::getNextRoomNum() - 1; i++) {
-        }
-        rate = occupied * 1.0 / (Room::getNextRoomNum() - 1);
-    }
     double dynamicPrice = 0.0;
     dynamicPrice = room->getDynamicPrice(checkInDate, rate) * nights;
     std::cout << "Base Price (w/o discount): " << dynamicPrice << std::endl;
@@ -237,17 +231,15 @@ void Reservation::saveToFile(std::ofstream &out) const {
 Reservation *Reservation::loadFromFile(std::ifstream &in, Guest *guests[], int guestCount, Room *rooms[],
                                        int roomCount) {
     int id, guestID, roomNum, nights;
-    char date[MAX_SIZE];
+    char date[200];
 
     if (!(in >> id)) return nullptr;
     in >> guestID >> roomNum;
     in.ignore();
-    in.getline(date, MAX_SIZE);
+    in.getline(date, 200);
     in >> nights;
     in.ignore();
-    double savedPrice;
-    in >> savedPrice;
-    in.ignore();
+
     Guest *g = nullptr;
     Room *r = nullptr;
 

@@ -112,13 +112,12 @@ void User::saveToFile(std::ofstream &out) const {
             << static_cast<int>(role) << '\n';
 }
 
-//редактирано
 User *User::loadFromFile(std::ifstream &in) {
     char uname[100], pass[100];
     int roleInt;
 
-    if (!in.getline(uname, MAX_SIZE)) return nullptr;
-    if (!in.getline(pass, MAX_SIZE)) return nullptr;
+    if (!in.getline(uname, 100)) return nullptr;
+    if (!in.getline(pass, 100)) return nullptr;
     if (!(in >> roleInt)) return nullptr;
     in.ignore();
 

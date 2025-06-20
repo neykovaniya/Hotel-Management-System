@@ -175,35 +175,32 @@ void Guest::saveToFile(std::ofstream &out) const {
             << status << '\n';
 }
 
-//редактирано
-Guest *Guest::loadFromFile(std::ifstream &in) {
+Guest* Guest::loadFromFile(std::ifstream& in) {
     int id;
-    char buffer[MAX_SIZE];
+    char buffer[200];
     guestStatus status;
 
     if (!(in >> id)) return nullptr;
     in.ignore();
 
-    in.getline(buffer, MAX_SIZE);
-    char *name = new char[strlen(buffer) + 1];
+    in.getline(buffer, 200);
+    char* name = new char[strlen(buffer) + 1];
     strcpy(name, buffer);
 
-    in.getline(buffer, MAX_SIZE);
-    char *phone = new char[strlen(buffer) + 1];
+    in.getline(buffer, 200);
+    char* phone = new char[strlen(buffer) + 1];
     strcpy(phone, buffer);
 
-    in.getline(buffer, MAX_SIZE);
-    char *email = new char[strlen(buffer) + 1];
+    in.getline(buffer, 200);
+    char* email = new char[strlen(buffer) + 1];
     strcpy(email, buffer);
 
     int statusInt;
     in >> statusInt;
-    if (statusInt < 0 || statusInt > 2)
-        return nullptr;
     status = static_cast<guestStatus>(statusInt);
     in.ignore();
 
-    Guest *g = new Guest(id, name, phone, email, status);
+    Guest* g = new Guest(id, name, phone, email, status);
     delete[] name;
     delete[] phone;
     delete[] email;
