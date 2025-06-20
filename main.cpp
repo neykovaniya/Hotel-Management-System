@@ -42,6 +42,31 @@ const int BUFFER_SIZE = 200;
 //     return true;
 // }
 
+bool safeInputInt(const char *message, int &value) {
+    std::cout << message;
+    std::cin >> value;
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(BUFFER_SIZE, '\n');
+        std::cout << "Invalid input! Please enter a number." << std::endl;
+        return false;
+    }
+    std::cin.ignore();
+    return true;
+}
+bool safeInputDouble(const char *message, double &value) {
+    std::cout << message;
+    std::cin >> value;
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(BUFFER_SIZE, '\n');
+        std::cout << "Invalid input! Please enter a number." << std::endl;
+        return false;
+    }
+    std::cin.ignore();
+    return true;
+}
+
 void generateRevenueAndOccupancyByRoomType(Reservation *reservations[], int reservationCount) {
     const int ROOM_TYPE_COUNT = 5;
     double revenueByType[ROOM_TYPE_COUNT] = {};
@@ -231,22 +256,17 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
         std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT" << std::endl;
         std::cin >> typeInput;
 
-        if (!std::cin.fail() && typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) break;
-
-        std::cin.clear();
-        std::cin.ignore(BUFFER_SIZE, '\n');
+        if (safeInputInt("Select room type: ", typeInput) &&
+    typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) {
+            break;
+    }
         std::cout << "Invalid room type :(. Try again!" << std::endl;
+
     }
 
     double price;
     while (true) {
-        std::cout << "Enter price per night: ";
-        std::cin >> price;
-
-        if (!std::cin.fail() && price >= 0) break;
-
-        std::cin.clear();
-        std::cin.ignore(BUFFER_SIZE, '\n');
+        if (safeInputDouble("Enter price per night: ", price) && price >= 0) break;
         std::cout << "Invalid price :(. Try again!" << std::endl;
     }
 
@@ -260,13 +280,7 @@ void editReservation(Reservation *reservations[], int reservationCount,
                      Room *rooms[], int roomCount, User *currentUser) {
     while (true) {
         int id;
-        std::cout << "Enter reservation ID to edit: ";
-        std::cin >> id;
-
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(BUFFER_SIZE, '\n');
-            std::cout << "Invalid input :(. Try again!\n" << std::endl;
+        if (!safeInputInt("Enter reservation ID to edit: ", id)) {
             continue;
         }
 
@@ -297,12 +311,7 @@ void editReservation(Reservation *reservations[], int reservationCount,
         }
 
         int nights;
-        std::cout << "Enter new number of nights: ";
-        std::cin >> nights;
-
-        if (std::cin.fail() || nights <= 0) {
-            std::cin.clear();
-            std::cin.ignore(BUFFER_SIZE, '\n');
+        if (!safeInputInt("Enter new number of nights: ", nights) || nights <= 0) {
             std::cout << "Invalid nights input :(. Try again!" << std::endl;
             continue;
         }
@@ -319,13 +328,7 @@ void editReservation(Reservation *reservations[], int reservationCount,
 void deleteReservation(Reservation *reservations[], int &reservationCount, User *currentUser) {
     while (true) {
         int id;
-        std::cout << "Enter reservation ID to delete: ";
-        std::cin >> id;
-
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(BUFFER_SIZE, '\n');
-            std::cout << "Invalid input :(. Try again!" << std::endl;
+        if (!safeInputInt("Enter reservation ID to delete: ", id)) {
             continue;
         }
 
@@ -356,19 +359,6 @@ void deleteReservation(Reservation *reservations[], int &reservationCount, User 
     }
 }
 
-
-bool safeInputInt(const char *message, int &value) {
-    std::cout << message;
-    std::cin >> value;
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(BUFFER_SIZE, '\n');
-        std::cout << "Invalid input! Please enter a number." << std::endl;
-        return false;
-    }
-    std::cin.ignore();
-    return true;
-}
 
 void showAllRooms(Room *rooms[], int roomCount) {
     std::cout << "----------rooms----------" << std::endl;
