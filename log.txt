@@ -1,0 +1,36 @@
+[admin] Added new room
+[admin] Created reservation for GuestID: 2 2
+[admin] Deleted reservation with ID: 1
+[admin] Created reservation for GuestID: 1 1
+[admin] Created reservation for GuestID: 2 2
+[admin] Added new room
+[admin] Created reservation for GuestID: 2 3
+[admin] Updated reservation
+[admin] Registered new guest
+[admin] Added new room
+[admin] Created reservation for GuestID: 3 2
+[admin] Updated reservation
+[admin] Deleted reservation with ID: 1
+[admin] Registered new user
+[admin] Added new room
+[admin] Registered new guest
+[admin] Registered new guest
+[admin] Added new room
+[admin] Registered new guest
+[admin] Added new room
+[admin] Added new room
+[admin] Registered new guest
+[admin] Added new room
+[admin] Registered new guest
+[admin] Created reservation for GuestID: 4 2
+[admin] Updated reservation
+[admin] Added new room
+[admin] Created reservation for GuestID: 4 2
+[admin] Updated reservation
+[admin] Added new room
+[admin] Added new room
+[admin] Added new room
+[admin] Added new room
+[admin] Added new room
+[admin] Created reservation for GuestID: 4 3
+[admin] Updated reservation
