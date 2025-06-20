@@ -324,8 +324,8 @@ void deleteReservation(Reservation *reservations[], int &reservationCount, User 
 
         if (std::cin.fail()) {
             std::cin.clear();
-            std::cin.ignore(200, '\n');
-            std::cout << "Invalid input :(. Try again!\n" << std::endl;
+            std::cin.ignore(BUFFER_SIZE, '\n');
+            std::cout << "Invalid input :(. Try again!" << std::endl;
             continue;
         }
 
@@ -338,7 +338,7 @@ void deleteReservation(Reservation *reservations[], int &reservationCount, User 
         }
 
         if (index == -1) {
-            std::cout << "Reservation not found :(. Try again!\n" << std::endl;
+            std::cout << "Reservation not found :(. Try again!" << std::endl;
             continue;
         }
 
