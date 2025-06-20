@@ -77,9 +77,13 @@ void generateRevenueAndOccupancyByRoomType(Reservation *reservations[], int rese
 
 void generateRevenueReportByDate(Reservation *reservations[], int reservationCount) {
     const int MAX_UNIQUE_DATES = 500;
-    char uniqueDays[MAX_UNIQUE_DATES][11] = {};
-    char uniqueMonths[MAX_UNIQUE_DATES][8] = {};
-    char uniqueYears[MAX_UNIQUE_DATES][5] = {};
+    const int DATE_LENGTH = 11;
+    const int MONTH_LENGTH = 8;
+    const int YEAR_LENGTH = 5;
+    const int MAX_ROOMS_REPORT = 100;
+    char uniqueDays[MAX_UNIQUE_DATES][DATE_LENGTH] = {};
+    char uniqueMonths[MAX_UNIQUE_DATES][MONTH_LENGTH] = {};
+    char uniqueYears[MAX_UNIQUE_DATES][YEAR_LENGTH] = {};
     double revenuePerDay[MAX_UNIQUE_DATES] = {};
     double revenuePerMonth[MAX_UNIQUE_DATES] = {};
     double revenuePerYear[MAX_UNIQUE_DATES] = {};
@@ -102,8 +106,8 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
             revenuePerDay[dayCount++] = price;
         }
 
-        char month[8] = {};
-        strncpy(month, date + 3, 7);
+        char month[MONTH_LENGTH] = {};
+        strncpy(month, date + 3, MONTH_LENGTH-1);
         bool foundMonth = false;
         for (int j = 0; j < monthCount; j++) {
             if (strcmp(uniqueMonths[j], month) == 0) {
@@ -117,8 +121,8 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
             revenuePerMonth[monthCount++] = price;
         }
 
-        char year[5] = {};
-        strncpy(year, date + 6, 4);
+        char year[YEAR_LENGTH] = {};
+        strncpy(year, date + 6, YEAR_LENGTH - 1);
         bool foundYear = false;
         for (int j = 0; j < yearCount; j++) {
             if (strcmp(uniqueYears[j], year) == 0) {
@@ -134,7 +138,7 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
     }
 
     std::ofstream report("report.txt");
-    if (!report) {
+    if (!report.is_open()) {
         std::cout << "Could not open report.txt for writing :(";
         return;
     }
@@ -161,8 +165,8 @@ void generateRevenueReportByDate(Reservation *reservations[], int reservationCou
     }
 
     report.close();
-    int roomNums[100] = {};
-    double roomRevenues[100] = {};
+    int roomNums[MAX_ROOMS_REPORT] = {};
+    double roomRevenues[MAX_ROOMS_REPORT] = {};
     int roomCount = 0;
 
     for (int i = 0; i < reservationCount; i++) {
