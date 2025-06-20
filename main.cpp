@@ -48,7 +48,6 @@ bool safeInputInt(const char *message, int &value) {
     if (std::cin.fail()) {
         std::cin.clear();
         std::cin.ignore(BUFFER_SIZE, '\n');
-        std::cout << "Invalid input! Please enter a number." << std::endl;
         return false;
     }
     std::cin.ignore();
@@ -60,7 +59,6 @@ bool safeInputDouble(const char *message, double &value) {
     if (std::cin.fail()) {
         std::cin.clear();
         std::cin.ignore(BUFFER_SIZE, '\n');
-        std::cout << "Invalid input! Please enter a number." << std::endl;
         return false;
     }
     std::cin.ignore();
@@ -254,8 +252,6 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
     while (true) {
         std::cout << "Select room type:" << std::endl;
         std::cout << "0 - SINGLE\n1 - DOUBLE\n2 - DELUXE\n3 - CONFERENCE_HALL\n4 - APARTMENT" << std::endl;
-        std::cin >> typeInput;
-
         if (safeInputInt("Select room type: ", typeInput) &&
     typeInput >= ROOM_TYPE_MIN && typeInput <= ROOM_TYPE_MAX) {
             break;
@@ -278,26 +274,27 @@ void addRoom(Room *rooms[], int &roomCount, User *currentUser) {
 
 void editReservation(Reservation *reservations[], int reservationCount,
                      Room *rooms[], int roomCount, User *currentUser) {
+    int id;
+    Reservation *r = nullptr;
+
     while (true) {
-        int id;
         if (!safeInputInt("Enter reservation ID to edit: ", id)) {
+            std::cout<<"Invalid input. :("<<std::endl;
             continue;
         }
 
-        Reservation *r = nullptr;
         for (int i = 0; i < reservationCount; i++) {
             if (reservations[i]->getID() == id) {
                 r = reservations[i];
                 break;
             }
         }
+        if (r) break;
+        std::cout << "Reservation not found :(. Try again!" << std::endl;
+    }
 
-        if (!r) {
-            std::cout << "Reservation not found :(. Try again!\n" << std::endl;
-            continue;
-        }
-
-        char newDate[200];
+    char newDate[BUFFER_SIZE];
+    while (true) {
         std::cin.ignore();
         std::cout << "Enter new check-in date (DD.MM.YYYY): ";
         std::cin.getline(newDate, BUFFER_SIZE);
@@ -305,24 +302,26 @@ void editReservation(Reservation *reservations[], int reservationCount,
         try {
             Reservation::dateValidation(newDate);
             r->setDate(newDate);
+            break;
         } catch (const std::invalid_argument &e) {
             std::cout << "Invalid date: " << e.what() << "\nTry again!" << std::endl;
-            continue;
         }
-
-        int nights;
-        if (!safeInputInt("Enter new number of nights: ", nights) || nights <= 0) {
-            std::cout << "Invalid nights input :(. Try again!" << std::endl;
-            continue;
-        }
-
-        r->setNights(nights);
-        r->calculateTotalPrice(rooms, roomCount);
-        std::cout << "Reservation updated successfully :)" << std::endl;
-        logAction(currentUser->getUsername(), "Updated reservation");
-        break;
     }
+
+    int nights;
+    while (true) {
+        if (safeInputInt("Enter new number of nights: ", nights) && nights > 0) {
+            r->setNights(nights);
+            break;
+        }
+        std::cout << "Invalid nights input :(. Try again!" << std::endl;
+    }
+
+    r->calculateTotalPrice(rooms, roomCount);
+    std::cout << "Reservation updated successfully :)" << std::endl;
+    logAction(currentUser->getUsername(), "Updated reservation");
 }
+
 
 
 void deleteReservation(Reservation *reservations[], int &reservationCount, User *currentUser) {
